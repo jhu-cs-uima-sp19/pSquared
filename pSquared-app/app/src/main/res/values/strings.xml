@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">pSquared</string>
+    <string name="profile_title">Profile</string>
+    <string name="email_label">Email:</string>
+    <string name="password_label">Password:</string>
+    <string name="settings_title">Settings</string>
+    <string name="active_listener_not">Notify me when a listener becomes online</string>
 </resources>
