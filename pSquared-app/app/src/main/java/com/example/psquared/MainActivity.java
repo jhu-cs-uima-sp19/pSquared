@@ -17,4 +17,8 @@ public class MainActivity extends AppCompatActivity {
         Intent toSettings = new Intent(this, Settings.class);
         startActivity(toSettings);
     }
+    public void about(View v) {
+        Intent toAbout = new Intent(this, About.class);
+        startActivity(toAbout);
+    }
 }
