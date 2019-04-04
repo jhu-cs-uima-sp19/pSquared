@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">pSquared</string>
+    <string name="test">pleaseLetMeFindGit</string>
+    <string name="listeners">Listeners</string>
+    <string name="stats">Statistics</string>
     <string name="login">Login</string>
     <string name="noAccount">Don\'t have an account?</string>
     <string name="register">Register</string>
