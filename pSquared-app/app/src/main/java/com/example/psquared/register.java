@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class register extends AppCompatActivity {
     private String email;
     private String password;
     private static Button createb;
-    private EditText getemail;
+    private EditText getEmail;
+    private TextView errorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,9 +23,20 @@ public class register extends AppCompatActivity {
         createb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText getemail = findViewById(R.id.email);
+                errorMessage = (TextView)findViewById(R.id.error);
+                EditText getEmail = findViewById(R.id.email);
                 // check email correctness
-                email = getemail.getText().toString();
+                String input = getEmail.getText().toString();
+                if (input.length() > 8) {
+                    String end = input.substring(input.length() - 8);
+                    if (end.equals("@jhu.edu")) {
+                        email = input;
+                    } else {
+                        errorMessage.setText("invalid email");
+                    }
+                } else {
+                    errorMessage.setText("invalid email");
+                }
                 EditText getPassword = findViewById(R.id.password);
                 String temp1 = getPassword.getText().toString();
                 EditText confirmPassword = findViewById(R.id.confirm);
@@ -31,6 +44,8 @@ public class register extends AppCompatActivity {
                 // put in requirements for password? length, special char
                 if (temp1.equals(temp2)) {
                     password = temp1;
+                } else {
+                    errorMessage.setText("passwords don't match");
                 }
             }
         });
