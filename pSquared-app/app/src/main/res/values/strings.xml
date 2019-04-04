@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">pSquared</string>
+    <string name="login">Login</string>
+    <string name="noAccount">Don\'t have an account?</string>
+    <string name="register">Register</string>
+    <string name="create">Create</string>
     <string name="profile_title">Profile</string>
     <string name="email_label">Email:</string>
     <string name="password_label">Password:</string>
