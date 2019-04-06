@@ -15,6 +15,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 public class register extends AppCompatActivity {
@@ -25,13 +27,19 @@ public class register extends AppCompatActivity {
     private TextView errorMessage;
 
     private FirebaseAuth mAuth;
+    private FirebaseDatabase database;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(getApplicationContext());
 
+        //initializing variables
         mAuth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+
+
 
         setContentView(R.layout.activity_register);
         createb = (Button) findViewById(R.id.createButton);
@@ -95,6 +103,10 @@ public class register extends AppCompatActivity {
 
                     }
                 });
+        DatabaseReference users = database.getReference("Users");
+        DatabaseReference thisUser = users.child(email.substring(0, email.indexOf("@")));
+        thisUser.setValue(0);
+
     }
 
 }
