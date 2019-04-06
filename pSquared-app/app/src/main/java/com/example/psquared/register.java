@@ -1,5 +1,6 @@
 package com.example.psquared;
 
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 
 public class register extends AppCompatActivity {
     private String email;
@@ -29,6 +32,9 @@ public class register extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
 
+    //create SharedPreferences variables
+    private SharedPreferences settings;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +96,8 @@ public class register extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
     }
 
     private void createAccount(String email, String password) {
@@ -106,6 +114,8 @@ public class register extends AppCompatActivity {
         DatabaseReference users = database.getReference("Users");
         DatabaseReference thisUser = users.child(email.substring(0, email.indexOf("@")));
         thisUser.setValue(0);
+        editor.putString("email", email);
+        editor.commit();
 
     }
 

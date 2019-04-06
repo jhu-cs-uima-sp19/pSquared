@@ -1,6 +1,7 @@
 package com.example.psquared;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 public class MainActivity extends AppCompatActivity {
 
     private static Button loginb;
@@ -28,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView invalidmessage;
     private FirebaseAuth mAuth;
 
-
-
+    //create SharedPreferences variables
+    private SharedPreferences settings;
+    private SharedPreferences.Editor editor;
 
 
     @Override
@@ -37,7 +41,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //set firebase authentication variable
         mAuth = FirebaseAuth.getInstance();
+
+        //set login buttons
         loginb = (Button) findViewById(R.id.loginButton);
         loginb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,10 +54,8 @@ public class MainActivity extends AppCompatActivity {
                 EditText checkPassword = findViewById(R.id.password_login);
                 password = checkPassword.getText().toString();
 
-                // send email and password pair to database to check if present
-                // if no such email and password
+                // does firebase login.
                 signInWithEmailAndPassword(email, password);
-
             }
         });
         registerb = (Button) findViewById(R.id.registerButton);
@@ -63,8 +68,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    // set the SharedPreferences variables
+    protected void onStart() {
+        super.onStart();
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
+    }
+
     //Tries to log in user with email and password
     private void signInWithEmailAndPassword(String email, String password) {
+        editor.putString("email", email);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -73,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
+                            editor.commit();
                             FirebaseUser user = mAuth.getCurrentUser();
                             login(user);
                         } else {
@@ -93,10 +108,6 @@ public class MainActivity extends AppCompatActivity {
         startActivity(toHome);
     }
 
-    public void settings(View v) {
-        Intent toSettings = new Intent(this, Settings.class);
-        startActivity(toSettings);
-    }
     public void about(View v) {
         Intent toAbout = new Intent(this, About.class);
         startActivity(toAbout);
