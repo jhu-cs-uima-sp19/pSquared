@@ -11,7 +11,7 @@ public class HomeTalker extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home_talker);
 
         //Wait for talker button to be clicked
         onTalk();
@@ -22,6 +22,7 @@ public class HomeTalker extends AppCompatActivity {
      */
     public void onTalk() {
         final Button talkBtn = findViewById(R.id.talk);
+
         final TextView tv = findViewById(R.id.pressToStopText);
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override

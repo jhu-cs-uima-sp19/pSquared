@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
+                            login(user);
                         } else {
                             // If sign in fails, display a message to the user.
                             invalidmessage.setText("incorrect email/password combination");
@@ -83,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+    //performs necessary actions on successful login
+    private void login(FirebaseUser user) {
+        Toast.makeText(getApplicationContext(), "changing activity", Toast.LENGTH_SHORT).show();
+        Intent toHome = new Intent(MainActivity.this, HomeTalker.class);
+        startActivity(toHome);
     }
 
     public void settings(View v) {
