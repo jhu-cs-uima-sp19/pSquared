@@ -11,7 +11,7 @@ public class HomeListener extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_home_listener);
 
         //Wait for talker or listen buttons to be clicked
         onTalk();

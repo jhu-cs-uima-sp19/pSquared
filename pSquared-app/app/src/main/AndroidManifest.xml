@@ -13,6 +13,8 @@
         <activity android:name=".About" />
         <activity android:name=".Settings" />
         <activity android:name=".register"></activity>
+        <activity android:name=".HomeTalker"></activity>
+        <activity android:name=".HomeListener"></activity>
         <activity android:name=".ListenerDatabase"></activity>
         <activity android:name=".CounselorMain" />
         <activity android:name=".MainActivity">
