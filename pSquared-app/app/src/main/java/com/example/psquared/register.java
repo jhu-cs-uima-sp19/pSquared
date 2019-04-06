@@ -1,12 +1,21 @@
 package com.example.psquared;
 
-import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 
 public class register extends AppCompatActivity {
     private String email;
@@ -15,22 +24,32 @@ public class register extends AppCompatActivity {
     private EditText getEmail;
     private TextView errorMessage;
 
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(getApplicationContext());
+
+        mAuth = FirebaseAuth.getInstance();
+
         setContentView(R.layout.activity_register);
         createb = (Button) findViewById(R.id.createButton);
         createb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                boolean pass1 = false;
+                boolean pass2 = false;
+
                 errorMessage = (TextView)findViewById(R.id.error);
-                EditText getEmail = findViewById(R.id.email);
+                getEmail = findViewById(R.id.email);
                 // check email correctness
                 String input = getEmail.getText().toString();
                 if (input.length() > 8) {
                     String end = input.substring(input.length() - 8);
                     if (end.equals("@jhu.edu")) {
                         email = input;
+                        pass1 = true;
                     } else {
                         errorMessage.setText("invalid email");
                     }
@@ -44,12 +63,38 @@ public class register extends AppCompatActivity {
                 // put in requirements for password? length, special char
                 if (temp1.equals(temp2)) {
                     password = temp1;
+                    pass2 = true;
                 } else {
                     errorMessage.setText("passwords don't match");
                 }
+
+                if (pass1 && pass2) {
+                    createAccount(email, password);
+                }
+
+
             }
         });
 
 
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    private void createAccount(String email, String password) {
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(getApplicationContext(), "registration successful", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+    }
+
 }

@@ -1,0 +1,44 @@
+{
+  "project_info": {
+    "project_number": "303863465790",
+    "firebase_url": "https://psquared-9e8ed.firebaseio.com",
+    "project_id": "psquared-9e8ed",
+    "storage_bucket": "psquared-9e8ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:303863465790:android:224dbfb21eb8f053",
+        "android_client_info": {
+          "package_name": "com.example.psquared"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "303863465790-fmnl42cf3h7brdereac8qgs2kb3ju8bt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.psquared",
+            "certificate_hash": "51c15001256cd0152704bbcf96641d07582af0a5"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC2QiA3zIiRqLLyyVuC7NTWr76Fkh4w_U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "303863465790-215qcitj0fit8r95uqpnt3s2691u5i1k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

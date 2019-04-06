@@ -8,6 +8,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MainActivity extends AppCompatActivity {
 
     private static Button loginb;
@@ -15,6 +19,10 @@ public class MainActivity extends AppCompatActivity {
     private String email;
     private String password;
     private TextView invalidmessage;
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
