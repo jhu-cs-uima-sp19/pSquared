@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeTalker"
-    android:background="#131321">
+    android:background="@color/colorPrimaryDark"
+    >
 
     <Button
         android:id="@+id/talk"
@@ -43,5 +44,16 @@
         app:layout_constraintBottom_toTopOf="@+id/talk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/overflow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:onClick="settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/arrow_down_float" />
 
 </android.support.constraint.ConstraintLayout>
