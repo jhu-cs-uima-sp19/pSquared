@@ -66,14 +66,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        Button dummyBtn = findViewById(R.id.dummy);
-        dummyBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent toHomeDummy = new Intent(MainActivity.this,HomeTalker.class);
-                startActivity(toHomeDummy);
-            }
-        });
+
     }
 
     @Override
