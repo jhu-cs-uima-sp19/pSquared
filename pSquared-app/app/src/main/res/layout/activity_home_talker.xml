@@ -61,13 +61,14 @@
 
     <ImageButton
         android:id="@+id/back"
-        android:layout_width="64dp"
-        android:layout_height="51dp"
-        android:layout_marginStart="6dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="22dp"
         android:background="@android:color/transparent"
+        android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/backIcon" />
+        app:srcCompat="@drawable/back_icon" />
 
 </android.support.constraint.ConstraintLayout>
