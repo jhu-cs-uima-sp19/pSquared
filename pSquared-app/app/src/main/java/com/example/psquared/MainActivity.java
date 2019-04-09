@@ -68,6 +68,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button buttonToHomeTalker = findViewById(R.id.button);
+        buttonToHomeTalker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toHomeTalker = new Intent(MainActivity.this,HomeTalker.class);
+                startActivity(toHomeTalker);
+            }
+        });
+
+        Button buttonToHomeListener = findViewById(R.id.button2);
+        buttonToHomeListener.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toHomeListener = new Intent(MainActivity.this,HomeListener.class);
+                startActivity(toHomeListener);
+            }
+        });
+
     }
 
     @Override
