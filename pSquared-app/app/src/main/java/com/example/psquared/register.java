@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +45,6 @@ public class register extends AppCompatActivity {
         //initializing variables
         mAuth = FirebaseAuth.getInstance();
         database = FirebaseDatabase.getInstance();
-
-
 
         setContentView(R.layout.activity_register);
         createb = (Button) findViewById(R.id.createButton);
@@ -85,11 +84,11 @@ public class register extends AppCompatActivity {
                 if (pass1 && pass2) {
                     createAccount(email, password);
                 }
-
-
             }
         });
 
+        //Screen pops off when back button is clicked
+        onTalk();
 
     }
 
@@ -117,6 +116,19 @@ public class register extends AppCompatActivity {
         editor.putString("email", email);
         editor.commit();
 
+    }
+
+    /**
+     * Listener presses the back button.
+     */
+    public void onTalk() {
+        final ImageButton backBtn = findViewById(R.id.back);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
 }

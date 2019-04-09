@@ -108,9 +108,4 @@ public class MainActivity extends AppCompatActivity {
         Intent toHome = new Intent(MainActivity.this, HomeTalker.class);
         startActivity(toHome);
     }
-
-    public void about(View v) {
-        Intent toAbout = new Intent(this, About.class);
-        startActivity(toAbout);
-    }
 }

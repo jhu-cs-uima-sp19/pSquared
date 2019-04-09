@@ -7,6 +7,17 @@
     android:background="@color/colorPrimaryDark"
     tools:context=".register">
 
+    <ImageButton
+        android:id="@+id/back"
+        android:layout_width="64dp"
+        android:layout_height="51dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="22dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/backIcon" />
+
     <TextView
         android:id="@+id/header_register"
         android:layout_width="wrap_content"

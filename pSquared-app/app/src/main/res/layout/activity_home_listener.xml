@@ -7,6 +7,19 @@
     tools:context=".HomeListener"
     android:background="@color/colorPrimaryDark">
 
+    <ImageButton
+        android:id="@+id/overflow"
+        android:layout_width="38dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="643dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/overflow" />
+
     <TextView
         android:id="@+id/pressToStopTalk"
         android:layout_width="wrap_content"
@@ -44,15 +57,14 @@
 
     <Button
         android:id="@+id/talk"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="70dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="35dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/grad_pink"
+        android:fontFamily="serif"
         android:text="Talk"
         android:textColor="@android:color/white"
         android:textSize="55sp"
@@ -63,15 +75,14 @@
 
     <Button
         android:id="@+id/listen"
-        android:layout_width="220dp"
-        android:layout_height="220dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="15dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="35dp"
         android:background="@drawable/grad_blue"
+        android:fontFamily="serif"
         android:text="Listen"
         android:textColor="@android:color/white"
         android:textSize="55sp"
