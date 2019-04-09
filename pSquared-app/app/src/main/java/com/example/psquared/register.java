@@ -1,5 +1,6 @@
 package com.example.psquared;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -100,9 +101,11 @@ public class register extends AppCompatActivity {
         editor = settings.edit();
     }
 
+    //create the account and add account to database. save username into shared preferences
     private void createAccount(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -115,8 +118,10 @@ public class register extends AppCompatActivity {
         DatabaseReference thisUser = users.child(email.substring(0, email.indexOf("@")));
         thisUser.setValue(0);
         editor.putString("email", email);
+        editor.putString("password", password);
         editor.commit();
-
+        Intent toLogin = new Intent(this, MainActivity.class);
+        startActivity(toLogin);
     }
 
 }

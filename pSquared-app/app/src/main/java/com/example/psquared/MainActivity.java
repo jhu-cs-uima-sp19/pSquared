@@ -81,11 +81,16 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
+
+        if (!settings.getString("email", "email").equals("email")) {
+            login(mAuth.getCurrentUser());
+        }
     }
 
     //Tries to log in user with email and password
     private void signInWithEmailAndPassword(String email, String password) {
         editor.putString("email", email);
+        editor.putString("password", password);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -133,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         //getting the listener value from SharedPreferences
         boolean listener = settings.getBoolean("Listener", false);
