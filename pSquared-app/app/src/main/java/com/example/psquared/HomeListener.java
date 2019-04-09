@@ -1,6 +1,7 @@
 package com.example.psquared;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuInflater;
@@ -10,16 +11,32 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class HomeListener extends AppCompatActivity {
     private FirebaseDatabase database;
+    private DatabaseReference availableTalkers;
+    private DatabaseReference availableListeners;
+    private DatabaseReference curUserTalker;
+    private DatabaseReference curUserListener;
+    private SharedPreferences settings;
+    private SharedPreferences.Editor editor;
+    static boolean availableAsTalker;
+    static boolean availableAsListener;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_listener);
+
+        availableAsTalker = false;
+        availableAsListener = false;
 
         //Wait for talker or listen buttons to be clicked
         onTalk();
@@ -29,6 +46,21 @@ public class HomeListener extends AppCompatActivity {
         overflowClicked();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
+        email = settings.getString("email", "email");
+        if (email.equals("email")) {
+            Toast.makeText(getApplicationContext(), "data error: email storage error", Toast.LENGTH_SHORT).show();
+        }
+
+        database = FirebaseDatabase.getInstance();
+        availableTalkers = database.getReference("availableTalkers");
+        availableListeners = database.getReference("availableListeners");
+    }
     /**
      * Overflow buttons shows pop-up menu that will lead to Settings or About pages.
      */
@@ -71,16 +103,29 @@ public class HomeListener extends AppCompatActivity {
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                talkBtn.setAlpha(.5f);
-                talkBtn.setText("Connecting to a Listener...");
-                talkBtn.setTextSize(30);
-                tv.setVisibility(View.VISIBLE);
+                if (!availableAsTalker) {
+                    talkBtn.setAlpha(.5f);
+                    talkBtn.setText("Connecting to a Listener...");
+                    talkBtn.setTextSize(30);
+                    tv.setVisibility(View.VISIBLE);
 
-                //Reset any settings for the listen button
-                resetListen();
+                    //changing firebase database values
+                    curUserTalker = availableTalkers.child(email.substring(0, email.indexOf("@")));
+                    curUserTalker.setValue(email);
+
+                    //changing boolean value to tell program button is selected
+                    availableAsTalker = true;
+                } else {
+
+                    //remove yourself from available talkers list
+                    curUserTalker.removeValue();
+                    availableAsTalker = false;
+                    resetTalk();
+                }
             }
         });
     }
+
 
     /**
      * Reset button attributes when Talk button is "unclicked".
@@ -106,13 +151,24 @@ public class HomeListener extends AppCompatActivity {
         listenBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listenBtn.setAlpha(.5f);
-                listenBtn.setText("Connecting to a Talker...");
-                listenBtn.setTextSize(30);
-                tv.setVisibility(View.VISIBLE);
+                if (!availableAsListener) {
+                    listenBtn.setAlpha(.5f);
+                    listenBtn.setText("Connecting to a Talker...");
+                    listenBtn.setTextSize(30);
+                    tv.setVisibility(View.VISIBLE);//changing firebase database values
 
-                //Reset any settings for the talk button
-                resetTalk();
+                    curUserListener = availableListeners.child(email.substring(0, email.indexOf("@")));
+                    curUserListener.setValue(email);
+
+                    //changing boolean value to tell program button is selected
+                    availableAsListener = true;
+
+                } else {
+                    //remove yourself from availableListenersList
+                    curUserListener.removeValue();
+                    resetListen();
+                    availableAsListener = false;
+                }
             }
         });
     }
