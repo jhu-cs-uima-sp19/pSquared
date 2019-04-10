@@ -29,6 +29,8 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+        // setup shared preferences variables
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
     }
@@ -36,7 +38,10 @@ public class Settings extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // set up Firebase and UI components
         mAuth = FirebaseAuth.getInstance();
+
         email = settings.getString("email", "email");
         emailText = findViewById(R.id.email_input);
         emailText.setText(email);
@@ -47,7 +52,7 @@ public class Settings extends AppCompatActivity {
 
     }
 
-    //signs the user out
+    // signs the user out and brings user to login screen
     public void signOut(View v) {
         editor.putString("email", "email");
         editor.putString("password", "password");
