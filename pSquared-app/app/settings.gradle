@@ -1,0 +1,1 @@
+include ':chat-sdk-firebase-file-storage', ':chat-sdk-profile-pictures', ':chat-sdk-firebase-adapter', ':chat-sdk-ui', ':chat-sdk-firebase-ui', ':chat-sdk-firebase-push', ':chat-sdk-core', ':chat-sdk-firebase-social-login'
