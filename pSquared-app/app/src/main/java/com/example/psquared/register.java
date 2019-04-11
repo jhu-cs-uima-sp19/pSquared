@@ -1,5 +1,6 @@
 package com.example.psquared;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,7 @@ public class register extends AppCompatActivity {
 
                 errorMessage = (TextView)findViewById(R.id.error);
                 getEmail = findViewById(R.id.email);
+
                 // check email correctness
                 String input = getEmail.getText().toString();
                 if (input.length() > 8) {
@@ -73,6 +75,7 @@ public class register extends AppCompatActivity {
                 String temp1 = getPassword.getText().toString();
                 EditText confirmPassword = findViewById(R.id.confirm);
                 String temp2 = confirmPassword.getText().toString();
+
                 // put in requirements for password? length, special char
                 if (temp1.equals(temp2)) {
                     password = temp1;
@@ -95,13 +98,17 @@ public class register extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // setup shared preferences variables
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
     }
 
+    //create the account and add account to database. save username into shared preferences
     private void createAccount(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
@@ -110,12 +117,19 @@ public class register extends AppCompatActivity {
 
                     }
                 });
+        // set username value in Database
         DatabaseReference users = database.getReference("Users");
         DatabaseReference thisUser = users.child(email.substring(0, email.indexOf("@")));
         thisUser.setValue(0);
+
+        // store user and password information into SharedPreferences
         editor.putString("email", email);
+        editor.putString("password", password);
         editor.commit();
 
+        // bring user back to login screen
+        Intent toLogin = new Intent(this, MainActivity.class);
+        startActivity(toLogin);
     }
 
     /**

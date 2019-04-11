@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         loginb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //get email and password input
                 EditText checkEmail = findViewById(R.id.email_login);
                 email = checkEmail.getText().toString();
                 EditText checkPassword = findViewById(R.id.password_login);
@@ -73,19 +75,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     // set the SharedPreferences variables
     protected void onStart() {
+        super.onStart();
 
-        //set firebase variables
+        // set firebase variables
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
 
-        super.onStart();
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
+
+        // automatically direct user to home screen if user is already signed in
+        if (!settings.getString("email", "email").equals("email")) {
+            login(mAuth.getCurrentUser());
+        }
     }
 
-    //Tries to log in user with email and password
+    //Tries to log in user with user inputted email and password
     private void signInWithEmailAndPassword(String email, String password) {
         editor.putString("email", email);
+        editor.putString("password", password);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -133,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
 
         //getting the listener value from SharedPreferences
         boolean listener = settings.getBoolean("Listener", false);
