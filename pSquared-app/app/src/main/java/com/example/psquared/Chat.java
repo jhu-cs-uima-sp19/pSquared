@@ -36,7 +36,7 @@ public class Chat extends AppCompatActivity {
     RelativeLayout activity_chat;
     FloatingActionButton fab;
 
-    /*
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_sign_out) {
@@ -71,7 +71,7 @@ public class Chat extends AppCompatActivity {
             }
         }
     }
-*/
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
