@@ -3,6 +3,7 @@ package com.example.psquared;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -121,7 +122,9 @@ public class HomeListener extends AppCompatActivity {
 
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
-                    availableListeners = database.getReference("availableListeners");
+
+                    // initialize database reference to available listeners
+                    final DatabaseReference availableListeners = database.getReference("availableListeners");
 
                     //scanning firebase for available listeners
                     availableListeners.addValueEventListener(new ValueEventListener() {
@@ -143,15 +146,20 @@ public class HomeListener extends AppCompatActivity {
                                     listener.removeValue();
 
                                     // remove yourself from available listeners
-                                    availableListeners.removeValue();
+                                    availableListeners.child(snapshot.getKey()).removeValue();
+                                    curUserTalker.removeValue();
 
                                     // remember chat ID for chatroom
                                     editor.putString("curChat", snapshot.getKey());
                                     editor.commit();
 
+                                    Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
+
                                     // go to chat
-                                    // Intent toChat = new Intent(HomeListener.this, Chat.class);
-                                    // startActivity(toChat);
+                                    Intent toChat = new Intent(HomeListener.this, Chat.class);
+                                    startActivity(toChat);
+
+                                    availableListeners.removeEventListener(this);
                                     break;
                                 }
                             }
@@ -211,7 +219,7 @@ public class HomeListener extends AppCompatActivity {
                     //changing boolean value to tell program button is selected
                     availableAsListener = true;
 
-                    DatabaseReference chats = database.getReference("chats");
+                    final DatabaseReference chats = database.getReference("chats");
 
                     // look through chats for chatID = listenerID
                     chats.addValueEventListener(new ValueEventListener() {
@@ -221,8 +229,12 @@ public class HomeListener extends AppCompatActivity {
                                 if (!snapshot.getKey().equals("dummy")) {
                                     DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
                                     chatdb.removeValue();
+
                                     editor.putString("curChat", snapshot.getKey());
                                     editor.commit();
+
+                                    Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
+                                    chats.removeEventListener(this);
                                     Intent toChat = new Intent(HomeListener.this, Chat.class);
                                     startActivity(toChat);
                                     break;

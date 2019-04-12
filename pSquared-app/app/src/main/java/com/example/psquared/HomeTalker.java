@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -104,30 +105,47 @@ public class HomeTalker extends AppCompatActivity {
 
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
-                    availableListeners = database.getReference("availableListeners");
-                    availableListeners.addChildEventListener(new ChildEventListener() {
+
+                    // initialize database reference to available listeners
+                    final DatabaseReference availableListeners = database.getReference("availableListeners");
+
+                    //scanning firebase for available listeners
+                    availableListeners.addValueEventListener(new ValueEventListener() {
                         @Override
-                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                for (DataSnapshot child: dataSnapshot.getChildren()) {
-                                    if (!child.getKey().equals("dummy")) {
-                                        Toast.makeText(getApplicationContext(), "Found a Listener", Toast.LENGTH_SHORT).show();
-                                    }
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            //loop through listeners
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+
+                                // ignore dummy entry of database
+                                if (!snapshot.getKey().equals("dummy")) {
+
+                                    //post chat to to database for listener to find
+                                    DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                                    chatdb.setValue("fuckyou");
+
+                                    //remove listener from available listeners
+                                    DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
+                                    listener.removeValue();
+
+                                    // remove yourself from available listeners
+                                    availableListeners.child(snapshot.getKey()).removeValue();
+                                    curUser.removeValue();
+
+                                    // remember chat ID for chatroom
+                                    editor.putString("curChat", snapshot.getKey());
+                                    editor.commit();
+
+                                    Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
+
+                                    // go to chat
+                                    Intent toChat = new Intent(HomeTalker.this, Chat.class);
+                                    startActivity(toChat);
+
+                                    availableListeners.removeEventListener(this);
+                                    break;
                                 }
-                        }
-
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                            }
                         }
 
                         @Override
