@@ -110,7 +110,9 @@ public class HomeListener extends AppCompatActivity {
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!availableAsTalker) {
+                Intent intent = new Intent(HomeListener.this,Chat.class);
+                startActivity(intent);
+                /*if (!availableAsTalker) {
                     talkBtn.setAlpha(.5f);
                     talkBtn.setText("Connecting to a Listener...");
                     talkBtn.setTextSize(30);
@@ -177,7 +179,7 @@ public class HomeListener extends AppCompatActivity {
                     curUserTalker.removeValue();
                     availableAsTalker = false;
                     resetTalk();
-                }
+                }*/
             }
         });
     }

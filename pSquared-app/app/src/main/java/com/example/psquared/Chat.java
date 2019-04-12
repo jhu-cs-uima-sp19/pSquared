@@ -1,6 +1,7 @@
 package com.example.psquared;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -29,13 +30,17 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Date;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 public class Chat extends AppCompatActivity {
 
     private static int SIGN_IN_REQUEST_CODE = 1;
     private FirebaseListAdapter<ChatMessage> adapter;
     RelativeLayout activity_chat;
-    FloatingActionButton fab;
-
+    FloatingActionButton send;
+    FloatingActionButton exit;
+    private DatabaseReference chat;
+    private String id;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -76,17 +81,28 @@ public class Chat extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
+        // assign unique id to the talker and listener
+        id = "blah";
         activity_chat = (RelativeLayout)findViewById(R.id.activity_chat);
-        fab = (FloatingActionButton)findViewById(R.id.fab);
+        send = (FloatingActionButton)findViewById(R.id.fabsend);
+        exit = (FloatingActionButton)findViewById(R.id.fabexit);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 EditText input = (EditText)findViewById(R.id.input);
-                FirebaseDatabase.getInstance().getReference("chat 1").push().setValue(new ChatMessage(input.getText().toString(),
+                FirebaseDatabase.getInstance().getReference(id).push().setValue(new ChatMessage(input.getText().toString(),
                         FirebaseAuth.getInstance().getCurrentUser().getEmail()));
                 input.setText("");
+            }
+        });
+
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chat = FirebaseDatabase.getInstance().getReference(id);
+                chat.removeValue();
+                finish();
             }
         });
         
@@ -99,7 +115,7 @@ public class Chat extends AppCompatActivity {
 
     private void displayChatMessage() {
         ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
-        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference("chat 1")) {
+        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView messageText,messageUser,messageTime;
