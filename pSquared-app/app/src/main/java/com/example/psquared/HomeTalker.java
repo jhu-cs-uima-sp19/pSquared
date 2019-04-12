@@ -66,9 +66,7 @@ public class HomeTalker extends AppCompatActivity {
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomeTalker.this,Chat.class);
-                startActivity(intent);
-                /*if (!availableAsTalker) {
+                if (!availableAsTalker) {
                     talkBtn.setAlpha(.5f);
                     talkBtn.setText("Connecting to a Listener...");
                     talkBtn.setTextSize(30);
@@ -80,11 +78,16 @@ public class HomeTalker extends AppCompatActivity {
 
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
+
+
+                    // if there are available listeners
+                    Intent intent = new Intent(HomeTalker.this,Chat.class);
+                    startActivity(intent);
                 } else {
                     curUser.removeValue();
                     resetTalk();;
                     availableAsTalker = false;
-                } */
+                }
 
 
             }

@@ -1,5 +1,6 @@
 package com.example.psquared;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -63,6 +64,11 @@ public class HomeListener extends AppCompatActivity {
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (availableAsListener) {
+                    curUserListener.removeValue();
+                    resetListen();
+                    availableAsListener = false;
+                }
                 if (!availableAsTalker) {
                     talkBtn.setAlpha(.5f);
                     talkBtn.setText("Connecting to a Listener...");
@@ -75,6 +81,12 @@ public class HomeListener extends AppCompatActivity {
 
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
+
+                    //if a talker is active
+                    /*if () {
+                        Intent intent = new Intent(HomeListener.this,Chat.class);
+                        startActivity(intent);
+                    }*/
                 } else {
 
                     //remove yourself from available talkers list
@@ -111,6 +123,11 @@ public class HomeListener extends AppCompatActivity {
         listenBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (availableAsTalker) {
+                    curUserTalker.removeValue();
+                    availableAsTalker = false;
+                    resetTalk();
+                }
                 if (!availableAsListener) {
                     listenBtn.setAlpha(.5f);
                     listenBtn.setText("Connecting to a Talker...");
