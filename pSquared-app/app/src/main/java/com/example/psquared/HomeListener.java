@@ -3,6 +3,8 @@ package com.example.psquared;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,8 +15,12 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -115,6 +121,48 @@ public class HomeListener extends AppCompatActivity {
 
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
+                    availableListeners = database.getReference("availableListeners");
+
+                    //scanning firebase for available listeners
+                    availableListeners.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            //loop through listeners
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+
+                                // ignore dummy entry of database
+                                if (!snapshot.getKey().equals("dummy")) {
+
+                                    //post chat to to database for listener to find
+                                    DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                                    chatdb.setValue("fuckyou");
+
+                                    //remove listener from available listeners
+                                    DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
+                                    listener.removeValue();
+
+                                    // remove yourself from available listeners
+                                    availableListeners.removeValue();
+
+                                    // remember chat ID for chatroom
+                                    editor.putString("curChat", snapshot.getKey());
+                                    editor.commit();
+
+                                    // go to chat
+                                    // Intent toChat = new Intent(HomeListener.this, Chat.class);
+                                    // startActivity(toChat);
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
                 } else {
 
                     //remove yourself from available talkers list
@@ -162,6 +210,31 @@ public class HomeListener extends AppCompatActivity {
 
                     //changing boolean value to tell program button is selected
                     availableAsListener = true;
+
+                    DatabaseReference chats = database.getReference("chats");
+
+                    // look through chats for chatID = listenerID
+                    chats.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                                if (!snapshot.getKey().equals("dummy")) {
+                                    DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                                    chatdb.removeValue();
+                                    editor.putString("curChat", snapshot.getKey());
+                                    editor.commit();
+                                    Intent toChat = new Intent(HomeListener.this, Chat.class);
+                                    startActivity(toChat);
+                                    break;
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
 
                 } else {
                     //remove yourself from availableListenersList
