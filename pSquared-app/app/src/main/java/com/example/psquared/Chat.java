@@ -84,7 +84,7 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditText input = (EditText)findViewById(R.id.input);
-                FirebaseDatabase.getInstance().getReference().push().setValue(new ChatMessage(input.getText().toString(),
+                FirebaseDatabase.getInstance().getReference("chat 1").push().setValue(new ChatMessage(input.getText().toString(),
                         FirebaseAuth.getInstance().getCurrentUser().getEmail()));
                 input.setText("");
             }
@@ -99,7 +99,7 @@ public class Chat extends AppCompatActivity {
 
     private void displayChatMessage() {
         ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
-        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference()) {
+        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference("chat 1")) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView messageText,messageUser,messageTime;
