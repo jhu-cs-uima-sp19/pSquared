@@ -39,6 +39,8 @@ public class Chat extends AppCompatActivity {
     RelativeLayout activity_chat;
     FloatingActionButton send;
     FloatingActionButton exit;
+    SharedPreferences settings;
+    SharedPreferences.Editor editor;
     private DatabaseReference chat;
     private String id;
 
@@ -82,7 +84,9 @@ public class Chat extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         // assign unique id to the talker and listener
-        id = "blah";
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
+        id = settings.getString("cur_chat", "fail");
         activity_chat = (RelativeLayout)findViewById(R.id.activity_chat);
         send = (FloatingActionButton)findViewById(R.id.fabsend);
         exit = (FloatingActionButton)findViewById(R.id.fabexit);

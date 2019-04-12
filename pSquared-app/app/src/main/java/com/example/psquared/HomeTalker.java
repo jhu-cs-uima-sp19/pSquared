@@ -137,12 +137,13 @@ public class HomeTalker extends AppCompatActivity {
                                     editor.commit();
 
                                     Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
+                                    availableListeners.removeEventListener(this);
 
+                                    resetTalk();
                                     // go to chat
                                     Intent toChat = new Intent(HomeTalker.this, Chat.class);
                                     startActivity(toChat);
 
-                                    availableListeners.removeEventListener(this);
                                     break;
                                 }
                             }
