@@ -122,11 +122,6 @@ public class register extends AppCompatActivity {
         DatabaseReference thisUser = users.child(email.substring(0, email.indexOf("@")));
         thisUser.setValue(0);
 
-        // store user and password information into SharedPreferences
-        editor.putString("email", email);
-        editor.putString("password", password);
-        editor.commit();
-
         // bring user back to login screen
         Intent toLogin = new Intent(this, MainActivity.class);
         startActivity(toLogin);

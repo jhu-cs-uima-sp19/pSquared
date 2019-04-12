@@ -16,6 +16,9 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class HomeTalker extends AppCompatActivity {
@@ -28,7 +31,20 @@ public class HomeTalker extends AppCompatActivity {
     private DatabaseReference curUser;
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
+
     String email;
+
+    //TIMER
+    //Components for installing a timer that appears at button click
+    /*TextView timerTV = findViewById(R.id.timerText);
+    int secondsPassed = 0;
+    Timer myTimer = new Timer();
+    TimerTask task = new TimerTask() {
+        public void run() {
+            secondsPassed++;
+            timerTV.setText(secondsPassed);
+        }
+    };*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,16 +90,21 @@ public class HomeTalker extends AppCompatActivity {
                     talkBtn.setTextSize(30);
                     tv.setVisibility(View.VISIBLE);
 
-                    //changing firebase database values
+                    //TIMER
+                    //myTimer.scheduleAtFixedRate(task, 1000, 1000);
+
+                    //changing Firebase database values
                     curUser = availableTalkers.child(email.substring(0, email.indexOf("@")));
                     curUser.setValue(email);
 
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
+
                 } else {
                     curUser.removeValue();
                     resetTalk();;
                     availableAsTalker = false;
+                }
                 } */
 
 
@@ -120,7 +141,6 @@ public class HomeTalker extends AppCompatActivity {
                 popup.show();
             }
         });
-
     }
     
     /**
