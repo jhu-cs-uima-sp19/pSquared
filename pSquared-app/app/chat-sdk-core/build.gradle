@@ -1,0 +1,74 @@
+apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        google()
+        maven { url "https://jitpack.io" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.greenrobot:greendao-gradle-plugin:$greenDaoVersion"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:$bintrayVersion"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:$mavenGradleVersion"
+    }
+}
+
+
+apply plugin: 'org.greenrobot.greendao'
+
+android {
+
+    compileSdkVersion Integer.parseInt(project.ANDROID_COMPILE_SDK_VERSION)
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt(project.MIN_SDK)
+        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+greendao {
+    schemaVersion 8
+    targetGenDir "src/main/java"
+    daoPackage "co.chatsdk.core.dao"
+}
+
+dependencies {
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation group: 'org.joda', name: 'joda-convert', version: "$jodaConvertVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.google.android.gms:play-services-maps:$playMapsVersion"
+    implementation "com.google.android.gms:play-services-location:$playLocationVersion"
+    implementation "androidx.recyclerview:recyclerview:$androidxRecyclerViewVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$androidxLifecycleExtensionsVersion"
+
+    // Dependencies that are also used by other Chat SDK libraries
+    api "org.greenrobot:greendao:$greenDaoVersion"
+    api "joda-time:joda-time:$jodaTimeVersion"
+    api "com.jakewharton.timber:timber:$timberVersion"
+    api "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    api "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    api "org.apache.commons:commons-lang3:$apacheCommonsVersion"
+    api "com.facebook.fresco:fresco:$frescoVersion"
+    api "id.zelory:compressor:$compressorVersion"
+
+}
+
+ext {
+    bintrayName = 'chat-sdk-core'
+    libraryName = 'ChatSDKCore'
+    artifact = 'chat-sdk-core'
+    libraryDescription = 'Chat SDK Core'
+}
+
+def bintrayGradleFile = file("$rootProject.rootDir/gradle/bintray.gradle")
+if (bintrayGradleFile.exists()) {
+    apply from: bintrayGradleFile
+}

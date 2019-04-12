@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView invalidmessage;
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
+    private DatabaseReference myRef;
 
     //create SharedPreferences variables
     private SharedPreferences settings;
@@ -50,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         loginb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //get email and password input
                 EditText checkEmail = findViewById(R.id.email_login);
                 email = checkEmail.getText().toString();
                 EditText checkPassword = findViewById(R.id.password_login);
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+<<<<<<< HEAD
         Button buttonToHomeTalker = findViewById(R.id.button);
         buttonToHomeTalker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,25 +89,63 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(toHomeListener);
             }
         });
+=======
+>>>>>>> 35252312f8d23ec39de76ed5dbda6a28c1b4a2f1
 
     }
 
     @Override
     // set the SharedPreferences variables
     protected void onStart() {
+        super.onStart();
 
-        //set firebase variables
+        // set firebase variables
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseDatabase.getInstance();
 
-        super.onStart();
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
+
+        // automatically direct user to home screen if user is already signed in
+        if (!settings.getString("email", "email").equals("email")) {
+            checkUserState(settings.getString("email", "email"));
+            login();
+        }
+
+    }
+    // checks Firebase to see if the user is a talker or listener
+    private void checkUserState(String email) {
+        myRef = db.getReference("Users").child(email.substring(0, email.indexOf("@")));
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //getting the listener value from the firebase database
+                long value = dataSnapshot.getValue(long.class);
+                Integer v = new Integer((int) value);
+
+                //storing the listener information into the shared preferences
+                if (value == 1) {
+                    editor.putBoolean("Listener", true);
+                    Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
+                } else {
+                    editor.putBoolean("Listener", false);
+                    Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
+                }
+                editor.commit();
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
-    //Tries to log in user with email and password
+    //Tries to log in user with user inputted email and password
     private void signInWithEmailAndPassword(String email, String password) {
         editor.putString("email", email);
+        editor.putString("password", password);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -114,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             editor.commit();
                             FirebaseUser user = mAuth.getCurrentUser();
-                            login(user);
+                            login();
                         } else {
                             // If sign in fails, display a message to the user.
                             invalidmessage.setText("incorrect email/password combination");
@@ -127,30 +169,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //performs necessary actions on successful login
-    private void login(FirebaseUser user) {
-        String email = user.getEmail();
-        DatabaseReference myRef = db.getReference("Users").child(email.substring(0, email.indexOf("@")));
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                //getting the listener value from the firebase database
-                long value = dataSnapshot.getValue(long.class);
-
-                //storing the listener information into the shared preferences
-                if (value == 1) {
-                    editor.putBoolean("Listener", true);
-                } else {
-                    editor.putBoolean("Listener", false);
-                }
-                editor.commit();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    private void login() {
 
         //getting the listener value from SharedPreferences
         boolean listener = settings.getBoolean("Listener", false);
