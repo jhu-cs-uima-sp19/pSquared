@@ -39,7 +39,8 @@ public class Chat extends AppCompatActivity {
     RelativeLayout activity_chat;
     FloatingActionButton send;
     FloatingActionButton exit;
-    private DatabaseReference chat1;
+    private DatabaseReference chat;
+    private String id;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -80,7 +81,8 @@ public class Chat extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-
+        // assign unique id to the talker and listener
+        id = "blah";
         activity_chat = (RelativeLayout)findViewById(R.id.activity_chat);
         send = (FloatingActionButton)findViewById(R.id.fabsend);
         exit = (FloatingActionButton)findViewById(R.id.fabexit);
@@ -89,7 +91,7 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 EditText input = (EditText)findViewById(R.id.input);
-                FirebaseDatabase.getInstance().getReference("chat 1").push().setValue(new ChatMessage(input.getText().toString(),
+                FirebaseDatabase.getInstance().getReference(id).push().setValue(new ChatMessage(input.getText().toString(),
                         FirebaseAuth.getInstance().getCurrentUser().getEmail()));
                 input.setText("");
             }
@@ -98,8 +100,8 @@ public class Chat extends AppCompatActivity {
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chat1 = FirebaseDatabase.getInstance().getReference("chat 1");
-                chat1.removeValue();
+                chat = FirebaseDatabase.getInstance().getReference(id);
+                chat.removeValue();
                 finish();
             }
         });
@@ -113,7 +115,7 @@ public class Chat extends AppCompatActivity {
 
     private void displayChatMessage() {
         ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
-        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference("chat 1")) {
+        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView messageText,messageUser,messageTime;
