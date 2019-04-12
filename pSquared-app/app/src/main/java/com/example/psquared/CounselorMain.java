@@ -18,4 +18,9 @@ public class CounselorMain extends AppCompatActivity {
         Intent mainToListeners = new Intent(this, ListenerDatabase.class);
         startActivity(mainToListeners);
     }
+
+    public void launchStatistics(View view) {
+        Intent maintoStats = new Intent(this, Statistics.class);
+        startActivity(maintoStats);
+    }
 }
