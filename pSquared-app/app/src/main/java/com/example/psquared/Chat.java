@@ -86,7 +86,7 @@ public class Chat extends AppCompatActivity {
         // assign unique id to the talker and listener
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
-        id = settings.getString("cur_chat", "fail");
+        id = settings.getString("curChat", "fail");
         activity_chat = (RelativeLayout)findViewById(R.id.activity_chat);
         send = (FloatingActionButton)findViewById(R.id.fabsend);
         exit = (FloatingActionButton)findViewById(R.id.fabexit);
