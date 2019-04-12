@@ -110,9 +110,7 @@ public class HomeListener extends AppCompatActivity {
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(HomeListener.this,Chat.class);
-                startActivity(intent);
-                /*if (!availableAsTalker) {
+                if (!availableAsTalker) {
                     talkBtn.setAlpha(.5f);
                     talkBtn.setText("Connecting to a Listener...");
                     talkBtn.setTextSize(30);
@@ -157,11 +155,13 @@ public class HomeListener extends AppCompatActivity {
 
                                     Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
 
+                                    resetTalk();
+                                    availableListeners.removeEventListener(this);
                                     // go to chat
                                     Intent toChat = new Intent(HomeListener.this, Chat.class);
                                     startActivity(toChat);
 
-                                    availableListeners.removeEventListener(this);
+
                                     break;
                                 }
                             }
@@ -179,7 +179,7 @@ public class HomeListener extends AppCompatActivity {
                     curUserTalker.removeValue();
                     availableAsTalker = false;
                     resetTalk();
-                }*/
+                }
             }
         });
     }
@@ -237,6 +237,7 @@ public class HomeListener extends AppCompatActivity {
 
                                     Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
                                     chats.removeEventListener(this);
+                                    resetListen();
                                     Intent toChat = new Intent(HomeListener.this, Chat.class);
                                     startActivity(toChat);
                                     break;
