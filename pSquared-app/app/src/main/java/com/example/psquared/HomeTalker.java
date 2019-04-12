@@ -104,13 +104,10 @@ public class HomeTalker extends AppCompatActivity {
                     curUser.removeValue();
                     resetTalk();;
                     availableAsTalker = false;
-<<<<<<< HEAD
                 }
-=======
                 } */
 
 
->>>>>>> 35252312f8d23ec39de76ed5dbda6a28c1b4a2f1
             }
         });
     }

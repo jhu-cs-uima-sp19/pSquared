@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-<<<<<<< HEAD
         Button buttonToHomeTalker = findViewById(R.id.button);
         buttonToHomeTalker.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(toHomeListener);
             }
         });
-=======
->>>>>>> 35252312f8d23ec39de76ed5dbda6a28c1b4a2f1
 
     }
 
@@ -124,14 +121,8 @@ public class MainActivity extends AppCompatActivity {
                 long value = dataSnapshot.getValue(long.class);
                 Integer v = new Integer((int) value);
 
-                //storing the listener information into the shared preferences
-                if (value == 1) {
-                    editor.putBoolean("Listener", true);
-                    Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
-                } else {
-                    editor.putBoolean("Listener", false);
-                    Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
-                }
+                //storing the listener information into the shared preference
+                editor.putInt("state", v);
                 editor.commit();
 
             }
@@ -172,14 +163,16 @@ public class MainActivity extends AppCompatActivity {
     private void login() {
 
         //getting the listener value from SharedPreferences
-        boolean listener = settings.getBoolean("Listener", false);
+        int listener = settings.getInt("state", 0);
 
         //navigating to matching home activity
-        if (listener) {
+        if (listener == 1) {
             Intent toHome = new Intent(MainActivity.this, HomeListener.class);
             startActivity(toHome);
+        } else if (listener == 2) {
+            Intent toHome = new Intent(MainActivity.this, CounselorMain.class);
+            startActivity(toHome);
         } else {
-
             Intent toHome = new Intent(MainActivity.this, HomeTalker.class);
             startActivity(toHome);
         }
