@@ -59,7 +59,13 @@ public class MainActivity extends AppCompatActivity {
                 password = checkPassword.getText().toString();
 
                 // does firebase login.
-                signInWithEmailAndPassword(email, password);
+                if (!(email.equals("") || password.equals(""))) {
+                    // Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_SHORT).show();
+                    signInWithEmailAndPassword(email, password);
+                } else {
+                    invalidmessage = (TextView)findViewById(R.id.invalid);
+                    invalidmessage.setText("incorrect email/password combination");
+                }
             }
         });
         registerb = (Button) findViewById(R.id.registerButton);
