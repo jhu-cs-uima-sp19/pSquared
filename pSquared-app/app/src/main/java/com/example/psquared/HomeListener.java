@@ -67,6 +67,9 @@ public class HomeListener extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         availableTalkers = database.getReference("availableTalkers");
         availableListeners = database.getReference("availableListeners");
+
+        availableAsTalker = false;
+        availableAsListener = false;
     }
     /**
      * Overflow buttons shows pop-up menu that will lead to Settings or About pages.
@@ -164,7 +167,6 @@ public class HomeListener extends AppCompatActivity {
                                         // go to chat
                                         Intent toChat = new Intent(HomeListener.this, Chat.class);
                                         startActivity(toChat);
-
 
                                         break;
                                     }
