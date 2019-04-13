@@ -86,10 +86,11 @@ public class Chat extends AppCompatActivity {
                 messageUser = (TextView) v.findViewById(R.id.message_user);
                 messageTime = (TextView) v.findViewById(R.id.message_time);
                 String me = settings.getString("name", "unknown");
-                if (messageUser.equals(me)) {
-                    messageUser.setText(model.getMessageUser());
+
+                if (model.getMessageUser().equals(me)) {
+                    messageUser.setText(me);
                 } else {
-                    messageUser.setText("Kaitlyn");
+                    messageUser.setText("Anonymous Penguin");
                 }
 
                 messageText.setText(model.getMessageText());
