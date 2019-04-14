@@ -67,6 +67,9 @@ public class HomeListener extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         availableTalkers = database.getReference("availableTalkers");
         availableListeners = database.getReference("availableListeners");
+
+        availableAsTalker = false;
+        availableAsListener = false;
     }
     /**
      * Overflow buttons shows pop-up menu that will lead to Settings or About pages.
@@ -110,75 +113,80 @@ public class HomeListener extends AppCompatActivity {
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!availableAsTalker) {
-                    talkBtn.setAlpha(.5f);
-                    talkBtn.setText("Connecting to a Listener...");
-                    talkBtn.setTextSize(30);
-                    tv.setVisibility(View.VISIBLE);
+                if (availableAsListener) {
+                    Toast.makeText(getApplicationContext(), "please remove yourself from listeners queue", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!availableAsTalker) {
+                        talkBtn.setAlpha(.5f);
+                        talkBtn.setText("Connecting to a Listener...");
+                        talkBtn.setTextSize(30);
+                        tv.setVisibility(View.VISIBLE);
 
-                    //changing firebase database values
-                    curUserTalker = availableTalkers.child(email.substring(0, email.indexOf("@")));
-                    curUserTalker.setValue(email);
+                        //changing firebase database values
+                        curUserTalker = availableTalkers.child(email.substring(0, email.indexOf("@")));
+                        curUserTalker.setValue(email);
 
-                    //changing boolean value to tell program button is selected
-                    availableAsTalker = true;
+                        //changing boolean value to tell program button is selected
+                        availableAsTalker = true;
 
-                    // initialize database reference to available listeners
-                    final DatabaseReference availableListeners = database.getReference("availableListeners");
+                        // initialize database reference to available listeners
+                        final DatabaseReference availableListeners = database.getReference("availableListeners");
 
-                    //scanning firebase for available listeners
-                    availableListeners.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        //scanning firebase for available listeners
+                        availableListeners.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            //loop through listeners
-                            for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                                //loop through listeners
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                                // ignore dummy entry of database
-                                if (!snapshot.getKey().equals("dummy")) {
+                                    // ignore dummy entry of database
+                                    if (!snapshot.getKey().equals("dummy")) {
 
-                                    //post chat to to database for listener to find
-                                    DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
-                                    chatdb.setValue("fuckyou");
+                                        //post chat to to database for listener to find
+                                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                                        chatdb.setValue("fuckyou");
 
-                                    //remove listener from available listeners
-                                    DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
-                                    listener.removeValue();
+                                        //remove listener from available listeners
+                                        DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
+                                        listener.removeValue();
 
-                                    // remove yourself from available listeners
-                                    availableListeners.child(snapshot.getKey()).removeValue();
-                                    curUserTalker.removeValue();
+                                        // remove yourself from available listeners
+                                        availableListeners.child(snapshot.getKey()).removeValue();
+                                        curUserTalker.removeValue();
 
-                                    // remember chat ID for chatroom
-                                    editor.putString("curChat", snapshot.getKey());
-                                    editor.commit();
+                                        // remember chat ID for chatroom
+                                        editor.putString("curChat", snapshot.getKey());
+                                        editor.putString("name", email);
+                                        editor.commit();
 
-                                    Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
 
-                                    resetTalk();
-                                    availableListeners.removeEventListener(this);
-                                    // go to chat
-                                    Intent toChat = new Intent(HomeListener.this, Chat.class);
-                                    startActivity(toChat);
+                                        resetTalk();
+                                        availableListeners.removeEventListener(this);
+                                        // go to chat
+                                        Intent toChat = new Intent(HomeListener.this, Chat.class);
+                                        startActivity(toChat);
 
-
-                                    break;
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
+                            }
 
-                } else {
+                        });
 
-                    //remove yourself from available talkers list
-                    curUserTalker.removeValue();
-                    availableAsTalker = false;
-                    resetTalk();
+                    } else {
+
+                        //remove yourself from available talkers list
+                        curUserTalker.removeValue();
+                        availableAsTalker = false;
+                        resetTalk();
+                    }
                 }
             }
         });
@@ -205,57 +213,60 @@ public class HomeListener extends AppCompatActivity {
     public void onListen() {
         final Button listenBtn = findViewById(R.id.listen);
         final TextView tv = findViewById(R.id.pressToStopListen);
-
         listenBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!availableAsListener) {
-                    listenBtn.setAlpha(.5f);
-                    listenBtn.setText("Connecting to a Talker...");
-                    listenBtn.setTextSize(30);
-                    tv.setVisibility(View.VISIBLE);//changing firebase database values
+                if (availableAsTalker) {
+                    Toast.makeText(getApplicationContext(), "please remove yourself from talkers queue", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (!availableAsListener) {
+                        listenBtn.setAlpha(.5f);
+                        listenBtn.setText("Connecting to a Talker...");
+                        listenBtn.setTextSize(30);
+                        tv.setVisibility(View.VISIBLE);//changing firebase database values
 
-                    curUserListener = availableListeners.child(email.substring(0, email.indexOf("@")));
-                    curUserListener.setValue(email);
+                        curUserListener = availableListeners.child(email.substring(0, email.indexOf("@")));
+                        curUserListener.setValue(email);
 
-                    //changing boolean value to tell program button is selected
-                    availableAsListener = true;
+                        //changing boolean value to tell program button is selected
+                        availableAsListener = true;
 
-                    final DatabaseReference chats = database.getReference("chats");
+                        final DatabaseReference chats = database.getReference("chats");
 
-                    // look through chats for chatID = listenerID
-                    chats.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                                if (!snapshot.getKey().equals("dummy")) {
-                                    DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
-                                    chatdb.removeValue();
+                        // look through chats for chatID = listenerID
+                        chats.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                                    if (!snapshot.getKey().equals("dummy")) {
+                                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                                        chatdb.removeValue();
 
-                                    editor.putString("curChat", snapshot.getKey());
-                                    editor.commit();
+                                        editor.putString("curChat", snapshot.getKey());
+                                        editor.putString("name", email);
+                                        editor.commit();
 
-                                    Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
-                                    chats.removeEventListener(this);
-                                    resetListen();
-                                    Intent toChat = new Intent(HomeListener.this, Chat.class);
-                                    startActivity(toChat);
-                                    break;
+                                        chats.removeEventListener(this);
+                                        resetListen();
+                                        Intent toChat = new Intent(HomeListener.this, Chat.class);
+                                        startActivity(toChat);
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
+                            }
+                        });
 
-                } else {
-                    //remove yourself from availableListenersList
-                    curUserListener.removeValue();
-                    resetListen();
-                    availableAsListener = false;
+                    } else {
+                        //remove yourself from availableListenersList
+                        curUserListener.removeValue();
+                        resetListen();
+                        availableAsListener = false;
+                    }
                 }
             }
         });
