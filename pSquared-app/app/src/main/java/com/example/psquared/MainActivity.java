@@ -11,17 +11,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.concurrent.TimeUnit;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.concurrent.TimeUnit;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -34,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView invalidmessage;
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
-    private DatabaseReference myRef;
 
     //create SharedPreferences variables
     private SharedPreferences settings;
@@ -59,7 +60,14 @@ public class MainActivity extends AppCompatActivity {
                 password = checkPassword.getText().toString();
 
                 // does firebase login.
-                signInWithEmailAndPassword(email, password);
+                if (!(email.equals("") || password.equals(""))) {
+                    // Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_SHORT).show();
+                    checkUserState(email);
+                    signInWithEmailAndPassword(email, password);
+                } else {
+                    invalidmessage = (TextView)findViewById(R.id.invalid);
+                    invalidmessage.setText("incorrect email/password combination");
+                }
             }
         });
         registerb = (Button) findViewById(R.id.registerButton);
@@ -68,24 +76,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this,register.class);
                 startActivity(intent);
-            }
-        });
-
-        Button buttonToHomeTalker = findViewById(R.id.button);
-        buttonToHomeTalker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent toHomeTalker = new Intent(MainActivity.this,HomeTalker.class);
-                startActivity(toHomeTalker);
-            }
-        });
-
-        Button buttonToHomeListener = findViewById(R.id.button2);
-        buttonToHomeListener.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent toHomeListener = new Intent(MainActivity.this,HomeListener.class);
-                startActivity(toHomeListener);
             }
         });
 
@@ -112,18 +102,20 @@ public class MainActivity extends AppCompatActivity {
     }
     // checks Firebase to see if the user is a talker or listener
     private void checkUserState(String email) {
-        myRef = db.getReference("Users").child(email.substring(0, email.indexOf("@")));
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        final DatabaseReference myRef = db.getReference("Users").child(email.substring(0, email.indexOf("@")));
+        myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //getting the listener value from the firebase database
                 long value = dataSnapshot.getValue(long.class);
                 Integer v = new Integer((int) value);
+                // Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
 
                 //storing the listener information into the shared preference
                 editor.putInt("state", v);
                 editor.commit();
+                myRef.removeEventListener(this);
 
             }
             @Override
@@ -146,7 +138,6 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             editor.commit();
-                            FirebaseUser user = mAuth.getCurrentUser();
                             login();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -162,14 +153,15 @@ public class MainActivity extends AppCompatActivity {
     //performs necessary actions on successful login
     private void login() {
 
-        //getting the listener value from SharedPreferences
-        int listener = settings.getInt("state", 0);
+        //getting the listener value from SharedPreferencee
+        int state = settings.getInt("state", 0);
+        // Toast.makeText(getApplicationContext(), new Integer(state).toString(), Toast.LENGTH_SHORT).show();
 
         //navigating to matching home activity
-        if (listener == 1) {
+        if (state == 1) {
             Intent toHome = new Intent(MainActivity.this, HomeListener.class);
             startActivity(toHome);
-        } else if (listener == 2) {
+        } else if (state == 2) {
             Intent toHome = new Intent(MainActivity.this, CounselorMain.class);
             startActivity(toHome);
         } else {
