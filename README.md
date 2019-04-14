@@ -28,8 +28,6 @@ By using this database, we can authenticate availability of Talkers and Listener
 
 Stand-Up Meetings
 
-March 28 - Meeting with Gaurav and Joanne
-
 April 2 - Team meeting
 <br>Discussed how to allocate responsibilities
 <br>Made changes to UI design before submitting finalized design
