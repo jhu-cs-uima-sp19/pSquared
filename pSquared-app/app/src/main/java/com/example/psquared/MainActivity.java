@@ -169,4 +169,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(toHome);
         }
     }
+    //counselor screen button for testing purposes.
+    public void counselorButton(View view) {
+        Intent mainToCounselor = new Intent(this, CounselorMain.class);
+        startActivity(mainToCounselor);
+    }
 }

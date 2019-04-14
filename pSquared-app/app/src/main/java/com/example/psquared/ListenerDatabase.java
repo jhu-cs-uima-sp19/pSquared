@@ -1,14 +1,20 @@
 package com.example.psquared;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class ListenerDatabase extends AppCompatActivity {
     private FirebaseDatabase database;
@@ -24,9 +30,32 @@ public class ListenerDatabase extends AppCompatActivity {
         startActivity(listenersToMain);
     }
 
-    public void setListener(View view) {
+    public void toggleListener(View view) {
+        EditText editText = findViewById(R.id.editText);
+        String username = editText.getText().toString();
         DatabaseReference users = database.getReference("Users");
-        DatabaseReference child = users.child("charles");
-        child.setValue(1);
+        final DatabaseReference child = users.child(username);
+        child.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //getting the listener value from the firebase database
+                long value = dataSnapshot.getValue(long.class);
+                Integer v = new Integer((int) value);
+                if (v == 0) {
+                    child.setValue(1);
+                    Toast.makeText(getApplicationContext(), "Successfully converted to listener", Toast.LENGTH_SHORT).show();
+                } else if (v == 1) {
+                    child.setValue(0);
+                    Toast.makeText(getApplicationContext(), "Successfully converted to talker", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 }
