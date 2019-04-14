@@ -121,16 +121,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/password_label" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/Profile_Title"
-        app:layout_constraintStart_toStartOf="@+id/email_label"
-        app:srcCompat="@drawable/back_icon" />
-
     <EditText
         android:id="@+id/password"
         android:layout_width="225dp"
