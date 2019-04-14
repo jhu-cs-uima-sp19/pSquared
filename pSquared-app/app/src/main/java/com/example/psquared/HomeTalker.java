@@ -85,11 +85,60 @@ public class HomeTalker extends AppCompatActivity {
     public void onTalk() {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopText);
+
+        // create listener for finding  an available listener
+        final ValueEventListener listen = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //loop through listeners
+                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+
+                    // ignore dummy entry of database
+                    if (!snapshot.getKey().equals("dummy")) {
+
+                        //post chat to to database for listener to find
+                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                        chatdb.setValue("fuckyou");
+
+                        //remove listener from available listeners
+                        DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
+                        listener.removeValue();
+
+                        // remove yourself from available listeners
+                        availableListeners.child(snapshot.getKey()).removeValue();
+                        curUser.removeValue();
+
+                        // remember chat ID for chatroom
+                        editor.putString("curChat", snapshot.getKey());
+                        editor.commit();
+
+                        Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
+                        availableListeners.removeEventListener(this);
+
+                        resetTalk();
+                        // go to chat
+                        Intent toChat = new Intent(HomeTalker.this, Chat.class);
+                        startActivity(toChat);
+
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
         talkBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intent = new Intent(HomeTalker.this,Chat.class);
-                //startActivity(intent);
+
+                // creating database reference to list of available listeners
+                final DatabaseReference availableListeners = database.getReference("availableListeners");
+
                 if (!availableAsTalker) {
                     talkBtn.setAlpha(.5f);
                     talkBtn.setText("Connecting to a Listener...");
@@ -106,59 +155,16 @@ public class HomeTalker extends AppCompatActivity {
                     //changing boolean value to tell program button is selected
                     availableAsTalker = true;
 
-                    // initialize database reference to available listeners
-                    final DatabaseReference availableListeners = database.getReference("availableListeners");
-
-                    //scanning firebase for available listeners
-                    availableListeners.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                            //loop through listeners
-                            for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
-
-                                // ignore dummy entry of database
-                                if (!snapshot.getKey().equals("dummy")) {
-
-                                    //post chat to to database for listener to find
-                                    DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
-                                    chatdb.setValue("fuckyou");
-
-                                    //remove listener from available listeners
-                                    DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
-                                    listener.removeValue();
-
-                                    // remove yourself from available listeners
-                                    availableListeners.child(snapshot.getKey()).removeValue();
-                                    curUser.removeValue();
-
-                                    // remember chat ID for chatroom
-                                    editor.putString("curChat", snapshot.getKey());
-                                    editor.commit();
-
-                                    Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
-                                    availableListeners.removeEventListener(this);
-
-                                    resetTalk();
-                                    // go to chat
-                                    Intent toChat = new Intent(HomeTalker.this, Chat.class);
-                                    startActivity(toChat);
-
-                                    break;
-                                }
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                    // add listener to database reference
+                    availableListeners.addValueEventListener(listen);
 
 
                 } else {
                     curUser.removeValue();
-                    resetTalk();;
+
+                    // stop listening for available listeners.
+                    availableListeners.removeEventListener(listen);
+                    resetTalk();
                     availableAsTalker = false;
                 }
             }
