@@ -30,10 +30,8 @@ import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 public class HomeTalker extends AppCompatActivity {
 
     static boolean availableAsTalker;
-    static boolean availableAsListener;
     private FirebaseDatabase database;
     private DatabaseReference availableTalkers;
-    private DatabaseReference availableListeners;
     private DatabaseReference curUser;
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
@@ -57,7 +55,6 @@ public class HomeTalker extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_talker);
         availableAsTalker = false;
-        availableAsListener = false;
         //Wait for talker button to be clicked
         onTalk();
 
@@ -77,6 +74,7 @@ public class HomeTalker extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         availableTalkers = database.getReference("availableTalkers");
+        availableAsTalker = false;
     }
 
     /**
@@ -134,6 +132,7 @@ public class HomeTalker extends AppCompatActivity {
 
                                     // remember chat ID for chatroom
                                     editor.putString("curChat", snapshot.getKey());
+                                    editor.putString("name", email);
                                     editor.commit();
 
                                     Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
