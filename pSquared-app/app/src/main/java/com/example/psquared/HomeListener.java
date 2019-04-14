@@ -145,7 +145,7 @@ public class HomeListener extends AppCompatActivity {
 
                                         //post chat to to database for listener to find
                                         DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
-                                        chatdb.setValue("fuckyou");
+                                        //chatdb.setValue("test");
 
                                         //remove listener from available listeners
                                         DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
