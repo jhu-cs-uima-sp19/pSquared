@@ -138,8 +138,6 @@ public class HomeListener extends AppCompatActivity {
                         editor.putString("name", email);
                         editor.commit();
 
-                        Toast.makeText(getApplicationContext(), "chat id: " + settings.getString("curChat", "fail"), Toast.LENGTH_SHORT).show();
-
                         resetTalk();
                         availableListeners.removeEventListener(this);
                         // go to chat
