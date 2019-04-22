@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
                 // does firebase login.
                 if (!(email.equals("") || password.equals(""))) {
                     // Toast.makeText(getApplicationContext(), "not null", Toast.LENGTH_SHORT).show();
-                    checkUserState(email);
                     signInWithEmailAndPassword(email, password);
                 } else {
                     invalidmessage = (TextView)findViewById(R.id.invalid);
@@ -129,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
     private void signInWithEmailAndPassword(String email, String password) {
         editor.putString("email", email);
         editor.putString("password", password);
+        final String Email = email;
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -138,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             editor.commit();
+                            checkUserState(Email);
                             login();
                         } else {
                             // If sign in fails, display a message to the user.
