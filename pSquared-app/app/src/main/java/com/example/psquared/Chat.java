@@ -1,6 +1,7 @@
 package com.example.psquared;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.text.format.DateFormat;
 
+import com.firebase.client.collection.LLRBNode;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -74,20 +76,27 @@ public class Chat extends AppCompatActivity {
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                TextView messageText,messageUser,messageTime;
-                messageText = (TextView) v.findViewById(R.id.message_text);
-                messageUser = (TextView) v.findViewById(R.id.message_user);
-                messageTime = (TextView) v.findViewById(R.id.message_time);
+                TextView name, message;
+                name = (TextView) v.findViewById(R.id.username);
+                message = (TextView) v.findViewById(R.id.message);
+                message.setText(model.getMessageText());
                 String me = settings.getString("name", "unknown");
-
+                RelativeLayout.LayoutParams shiftName = (RelativeLayout.LayoutParams) name.getLayoutParams();
+                RelativeLayout.LayoutParams shiftText = (RelativeLayout.LayoutParams) message.getLayoutParams();
                 if (model.getMessageUser().equals(me)) {
-                    messageUser.setText(me);
+                    name.setText(me);
+                    name.setTextColor(Color.WHITE);
+                    message.setTextColor(Color.WHITE);
+                    shiftName.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+                    shiftText.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
                 } else {
-                    messageUser.setText("Anonymous Penguin");
+                    name.setText("Anonymous Penguin");
+                    name.setTextColor(Color.RED);
+                    message.setTextColor(Color.RED);
+                    shiftName.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                    shiftText.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
                 }
 
-                messageText.setText(model.getMessageText());
-                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm)",model.getMessageTime()));
             }
         };
         listofMessage.setAdapter(adapter);
