@@ -1,6 +1,9 @@
 package com.example.psquared;
 
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -11,9 +14,13 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.text.format.DateFormat;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -30,6 +37,26 @@ public class Chat extends AppCompatActivity {
     SharedPreferences.Editor editor;
     private DatabaseReference chat;
     private String id;
+
+    private boolean backexit = false;
+    @Override
+    public void onBackPressed() {
+        if (backexit) {
+            chat = FirebaseDatabase.getInstance().getReference(id);
+            chat.removeValue();
+            finish();
+        } else {
+            Toast.makeText(this, "Press Back again to Leave the Chat.",
+                    Toast.LENGTH_SHORT).show();
+            backexit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    backexit = false;
+                }
+            }, 10 * 1000);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +93,37 @@ public class Chat extends AppCompatActivity {
         Snackbar.make(activity_chat, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Snackbar.LENGTH_SHORT).show();
         //load content
         displayChatMessage();
+        chat = FirebaseDatabase.getInstance().getReference(id);
+        chat.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
+
+                finish();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+
+        });
+
 
     }
 
