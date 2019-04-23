@@ -42,6 +42,13 @@ public class HomeListener extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_listener);
 
+        // setup shared preferences
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
+        email = settings.getString("email", "email");
+        editor.putBoolean("canLook", false);
+        editor.commit();
+
         availableAsTalker = false;
         availableAsListener = false;
 
@@ -57,9 +64,7 @@ public class HomeListener extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        settings = getDefaultSharedPreferences(this);
-        editor = settings.edit();
-        email = settings.getString("email", "email");
+
         if (email.equals("email")) {
             Toast.makeText(getApplicationContext(), "data error: email storage error", Toast.LENGTH_SHORT).show();
         }
@@ -110,6 +115,33 @@ public class HomeListener extends AppCompatActivity {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopTalk);
 
+
+        // checks to see if the talker is the first position in the queue
+        final ValueEventListener queuePosChecker = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // a counter that counts the position of the available talker in the arry
+                int counter = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (!snapshot.getKey().equals("dummy") && snapshot.getKey().equals(email.substring(0, email.indexOf("@"))) && counter == 0) {
+                        Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
+                        editor.putBoolean("canLook", true);
+                        editor.commit();
+                        break;
+                    } else if (!snapshot.getKey().equals("dummy") && !snapshot.getKey().equals(email.substring(0, email.indexOf("@")))) {
+                        editor.putBoolean("canLook", false);
+                        editor.commit();
+                        counter ++;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
         //creating listener for finding available listeners.
         final ValueEventListener listen = new ValueEventListener() {
             @Override
@@ -119,7 +151,7 @@ public class HomeListener extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy")) {
+                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
 
                         //post chat to to database for listener to find
                         DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
@@ -136,6 +168,9 @@ public class HomeListener extends AppCompatActivity {
                         // remember chat ID for chatroom
                         editor.putString("curChat", snapshot.getKey());
                         editor.putString("name", email);
+
+                        // not available to look anymore
+                        editor.putBoolean("canLook", false);
                         editor.commit();
 
                         resetTalk();
@@ -176,6 +211,7 @@ public class HomeListener extends AppCompatActivity {
 
                         //add listener to database reference
                         availableListeners.addValueEventListener(listen);
+                        availableTalkers.addValueEventListener(queuePosChecker);
 
                         //changing boolean value to tell program button is selected
                         availableAsTalker = true;
@@ -185,8 +221,9 @@ public class HomeListener extends AppCompatActivity {
                         //remove yourself from available talkers list
                         curUserTalker.removeValue();
 
-                        //remove listener from database reference.
+                        //remove listener from database references.
                         availableListeners.removeEventListener(listen);
+                        availableTalkers.removeEventListener(queuePosChecker);
                         availableAsTalker = false;
                         resetTalk();
                     }
