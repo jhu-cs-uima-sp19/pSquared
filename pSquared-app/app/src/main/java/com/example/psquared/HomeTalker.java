@@ -87,6 +87,33 @@ public class HomeTalker extends AppCompatActivity {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopText);
 
+        // checks to see if the talker is the first position in the queue
+        final ValueEventListener queuePosChecker = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // a counter that counts the position of the available talker in the arry
+                int counter = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (!snapshot.getKey().equals("dummy") && snapshot.getKey().equals(email.substring(0, email.indexOf("@"))) && counter == 0) {
+                        Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
+                        editor.putBoolean("canLook", true);
+                        editor.commit();
+                        break;
+                    } else if (!snapshot.getKey().equals("dummy") && !snapshot.getKey().equals(email.substring(0, email.indexOf("@")))) {
+                        editor.putBoolean("canLook", false);
+                        editor.commit();
+                        counter ++;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
         // create listener for finding  an available listener
         final ValueEventListener listen = new ValueEventListener() {
             @Override
@@ -113,6 +140,9 @@ public class HomeTalker extends AppCompatActivity {
                         // remember chat ID for chatroom
                         editor.putString("curChat", snapshot.getKey());
                         editor.putString("name", email);
+
+                        // not available to look anymore
+                        editor.putBoolean("canLook", false);
                         editor.commit();
 
                         resetTalk();
@@ -157,13 +187,14 @@ public class HomeTalker extends AppCompatActivity {
 
                     // add listener to database reference
                     availableListeners.addValueEventListener(listen);
-
+                    availableTalkers.addValueEventListener(queuePosChecker);
 
                 } else {
                     curUser.removeValue();
 
                     // stop listening for available listeners.
                     availableListeners.removeEventListener(listen);
+                    availableTalkers.removeEventListener(queuePosChecker);
                     resetTalk();
                     availableAsTalker = false;
                 }
