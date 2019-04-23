@@ -76,25 +76,22 @@ public class Chat extends AppCompatActivity {
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                TextView name, message;
-                name = (TextView) v.findViewById(R.id.username);
-                message = (TextView) v.findViewById(R.id.message);
-                message.setText(model.getMessageText());
+                TextView  sentmessage, receivedmessage;
+                sentmessage = (TextView) v.findViewById(R.id.mymessage);
+                receivedmessage = (TextView) v.findViewById(R.id.yourmessage);
                 String me = settings.getString("name", "unknown");
-                RelativeLayout.LayoutParams shiftName = (RelativeLayout.LayoutParams) name.getLayoutParams();
-                RelativeLayout.LayoutParams shiftText = (RelativeLayout.LayoutParams) message.getLayoutParams();
                 if (model.getMessageUser().equals(me)) {
-                    name.setText(me);
-                    name.setTextColor(Color.WHITE);
-                    message.setTextColor(Color.WHITE);
-                    shiftName.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
-                    shiftText.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+                    sentmessage.setText(model.getMessageText());
+                    //receivedmessage.setVisibility(View.INVISIBLE);
+                    //shiftName.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+                    //shiftText.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
                 } else {
-                    name.setText("Anonymous Penguin");
-                    name.setTextColor(Color.RED);
-                    message.setTextColor(Color.RED);
-                    shiftName.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
-                    shiftText.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                    receivedmessage.setText(model.getMessageText());
+                    //sentmessage.setVisibility(View.INVISIBLE);
+                    //name.setTextColor(Color.RED);
+                    //message.setTextColor(Color.RED);
+                    //shiftName.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                    //shiftText.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
                 }
 
             }
