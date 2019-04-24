@@ -115,7 +115,6 @@ public class HomeListener extends AppCompatActivity {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopTalk);
 
-
         // checks to see if the talker is the first position in the queue
         final ValueEventListener queuePosChecker = new ValueEventListener() {
             @Override
@@ -124,15 +123,16 @@ public class HomeListener extends AppCompatActivity {
                 // a counter that counts the position of the available talker in the arry
                 int counter = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (!snapshot.getKey().equals("dummy") && snapshot.getKey().equals(email.substring(0, email.indexOf("@"))) && counter == 0) {
+                    if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email)&& counter == 0) {
                         Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
                         editor.putBoolean("canLook", true);
                         editor.commit();
                         break;
-                    } else if (!snapshot.getKey().equals("dummy") && !snapshot.getKey().equals(email.substring(0, email.indexOf("@")))) {
+                    } else if (!snapshot.getKey().equals("dummy") && !snapshot.getValue().toString().equals(email)){
                         editor.putBoolean("canLook", false);
                         editor.commit();
                         counter ++;
+                        break;
                     }
                 }
             }
@@ -206,7 +206,7 @@ public class HomeListener extends AppCompatActivity {
                         tv.setVisibility(View.VISIBLE);
 
                         //changing firebase database values
-                        curUserTalker = availableTalkers.child(email.substring(0, email.indexOf("@")));
+                        curUserTalker = availableTalkers.child(Long.toString(System.currentTimeMillis()));
                         curUserTalker.setValue(email);
 
                         //add listener to database reference
