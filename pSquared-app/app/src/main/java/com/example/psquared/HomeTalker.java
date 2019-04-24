@@ -121,14 +121,14 @@ public class HomeTalker extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //loop through listeners
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
                     if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
 
                         //post chat to to database for listener to find
-                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
-                        chatdb.setValue("placeholder text");
+                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getValue().toString());
+                        chatdb.setValue("meep");
 
                         //remove listener from available listeners
                         DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
@@ -139,7 +139,7 @@ public class HomeTalker extends AppCompatActivity {
                         curUser.removeValue();
 
                         // remember chat ID for chatroom
-                        editor.putString("curChat", snapshot.getKey());
+                        editor.putString("curChat", snapshot.getValue().toString());
                         editor.putString("name", email);
 
                         // not available to look anymore

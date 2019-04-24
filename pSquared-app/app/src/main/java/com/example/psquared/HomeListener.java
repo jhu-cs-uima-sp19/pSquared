@@ -154,7 +154,7 @@ public class HomeListener extends AppCompatActivity {
                     if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
 
                         //post chat to to database for listener to find
-                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
+                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getValue().toString());
                         chatdb.setValue("meep");
 
                         //remove listener from available listeners
@@ -166,7 +166,7 @@ public class HomeListener extends AppCompatActivity {
                         curUserTalker.removeValue();
 
                         // remember chat ID for chatroom
-                        editor.putString("curChat", snapshot.getKey());
+                        editor.putString("curChat", snapshot.getValue().toString());
                         editor.putString("name", email);
 
                         // not available to look anymore
@@ -265,8 +265,8 @@ public class HomeListener extends AppCompatActivity {
                         listenBtn.setTextSize(30);
                         tv.setVisibility(View.VISIBLE);//changing firebase database values
 
-                        curUserListener = availableListeners.child(email.substring(0, email.indexOf("@")));
-                        curUserListener.setValue(email);
+                        curUserListener = availableListeners.child(Long.toString(System.currentTimeMillis()));
+                        curUserListener.setValue(email.substring(0, email.indexOf("@")));
 
                         //changing boolean value to tell program button is selected
                         availableAsListener = true;
@@ -278,7 +278,7 @@ public class HomeListener extends AppCompatActivity {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                    if (!snapshot.getKey().equals("dummy")) {
+                                    if (!snapshot.getKey().equals("dummy") && snapshot.getKey().equals(email.substring(0, email.indexOf("@")))) {
                                         DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
                                         chatdb.removeValue();
 
