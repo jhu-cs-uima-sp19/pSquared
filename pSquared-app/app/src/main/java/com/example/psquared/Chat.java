@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -74,24 +75,33 @@ public class Chat extends AppCompatActivity {
     private void displayChatMessage() {
         ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
+
+            @Override
+            public ChatMessage getItem(int pos) {
+                return super.getItem(getCount() - 1 - pos);
+            }
+            @Override
+            public int getItemViewType(int position) {
+                String me = settings.getString("name", "unknown");
+                ChatMessage chat = this.getItem(position);
+                if(chat.getMessageUser().equals(me)){
+                    return 0;
+                }else{
+                    return 1;
+                }
+            }
+
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView  sentmessage, receivedmessage;
                 sentmessage = (TextView) v.findViewById(R.id.mymessage);
                 receivedmessage = (TextView) v.findViewById(R.id.yourmessage);
-                String me = settings.getString("name", "unknown");
-                if (model.getMessageUser().equals(me)) {
+                if () {
                     sentmessage.setText(model.getMessageText());
-                    //receivedmessage.setVisibility(View.INVISIBLE);
-                    //shiftName.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
-                    //shiftText.addRule(RelativeLayout.ALIGN_PARENT_END, RelativeLayout.TRUE);
+                    receivedmessage.setVisibility(View.INVISIBLE);
                 } else {
                     receivedmessage.setText(model.getMessageText());
-                    //sentmessage.setVisibility(View.INVISIBLE);
-                    //name.setTextColor(Color.RED);
-                    //message.setTextColor(Color.RED);
-                    //shiftName.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
-                    //shiftText.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                    sentmessage.setVisibility(View.INVISIBLE);
                 }
 
             }
