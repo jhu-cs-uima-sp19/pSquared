@@ -8,6 +8,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,6 +26,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class Chat extends AppCompatActivity {
@@ -37,6 +41,8 @@ public class Chat extends AppCompatActivity {
     SharedPreferences.Editor editor;
     private DatabaseReference chat;
     private String id;
+    long startTime = -1;
+    long latestTime = -1;
 
     private boolean backexit = false;
     @Override
@@ -56,6 +62,14 @@ public class Chat extends AppCompatActivity {
                 }
             }, 10 * 1000);
         }
+    }
+
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        if (date1 == null) {
+            return 0;
+        }
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -108,7 +122,6 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
-
                 finish();
             }
 
@@ -141,11 +154,26 @@ public class Chat extends AppCompatActivity {
                 if (model.getMessageUser().equals(me)) {
                     messageUser.setText(me);
                 } else {
-                    messageUser.setText("Anonymous Penguin");
+                    messageUser.setText("Anonymous");
                 }
 
                 messageText.setText(model.getMessageText());
-                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm)",model.getMessageTime()));
+
+                if (startTime == -1) {
+                    startTime = model.getMessageTime();
+                    latestTime = startTime;
+                } else {
+                    latestTime = model.getMessageTime();
+                    TimeUnit minutes;
+                    long dif = latestTime - startTime;
+                    long min = TimeUnit.MILLISECONDS.toMinutes(dif);
+                    if (min > 1) {
+                        messageUser.setText("Penguins");
+                    }
+                }
+
+                //messageTime.setText(""+getDateDiff(startTime,latestTime,TimeUnit.SECONDS));
+                //messageTime.setText(DateFormat.format("(HH:mm)",model.getMessageTime()));
             }
         };
         listofMessage.setAdapter(adapter);
