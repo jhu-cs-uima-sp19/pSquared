@@ -33,6 +33,7 @@ public class Chat extends AppCompatActivity {
     SharedPreferences.Editor editor;
     private DatabaseReference chat;
     private String id;
+    private long startTime = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,6 @@ public class Chat extends AppCompatActivity {
                 finish();
             }
         });
-        
         Snackbar.make(activity_chat, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Snackbar.LENGTH_SHORT).show();
         //load content
         displayChatMessage();
@@ -75,7 +75,7 @@ public class Chat extends AppCompatActivity {
     private void displayChatMessage() {
         ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
-
+            /*
             @Override
             public ChatMessage getItem(int pos) {
                 return super.getItem(getCount() - 1 - pos);
@@ -90,13 +90,14 @@ public class Chat extends AppCompatActivity {
                     return 1;
                 }
             }
-
+            */
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView  sentmessage, receivedmessage;
                 sentmessage = (TextView) v.findViewById(R.id.mymessage);
                 receivedmessage = (TextView) v.findViewById(R.id.yourmessage);
-                if () {
+                String me = settings.getString("name", "unknown");
+                if (model.getMessageUser().equals(me)) {
                     sentmessage.setText(model.getMessageText());
                     receivedmessage.setVisibility(View.INVISIBLE);
                 } else {
