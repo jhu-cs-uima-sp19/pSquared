@@ -94,14 +94,20 @@ public class MainActivity extends AppCompatActivity {
 
         // automatically direct user to home screen if user is already signed in
         if (!settings.getString("email", "email").equals("email")) {
-            checkUserState(settings.getString("email", "email"));
-            login();
+            login(settings.getString("email", "email"));
+            //login();
         }
 
     }
     // checks Firebase to see if the user is a talker or listener
-    private void checkUserState(String email) {
+    private void login(String email) {
         final DatabaseReference myRef = db.getReference("Users").child(email.substring(0, email.indexOf("@")));
+
+        // create intents to redirect to home screens
+        final Intent toCounserlor = new Intent(MainActivity.this, CounselorMain.class);
+        final Intent toTalker = new Intent(MainActivity.this, HomeTalker.class);
+        final Intent toListener = new Intent(MainActivity.this, HomeListener.class);
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -109,13 +115,27 @@ public class MainActivity extends AppCompatActivity {
                 //getting the listener value from the firebase database
                 long value = dataSnapshot.getValue(long.class);
                 Integer v = new Integer((int) value);
-                // Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
 
                 //storing the listener information into the shared preference
-                editor.putInt("state", v);
-                editor.commit();
                 myRef.removeEventListener(this);
+                switch (v) {
+                    case 0:
+                        Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
+                        startActivity(toTalker);
+                        break;
+                    case 1:
+                        Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
+                        startActivity(toListener);
+                        break;
+                    case 2:
+                        Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
+                        startActivity(toCounserlor);
+                        break;
+                    default:
+                        startActivity(toTalker);
 
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -138,8 +158,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             editor.commit();
-                            checkUserState(Email);
-                            login();
+                            login(Email);
                         } else {
                             // If sign in fails, display a message to the user.
                             invalidmessage.setText("incorrect email/password combination");
@@ -149,30 +168,5 @@ public class MainActivity extends AppCompatActivity {
                         // ...
                     }
                 });
-    }
-
-    //performs necessary actions on successful login
-    private void login() {
-
-        //getting the listener value from SharedPreferencee
-        int state = settings.getInt("state", 0);
-        // Toast.makeText(getApplicationContext(), new Integer(state).toString(), Toast.LENGTH_SHORT).show();
-
-        //navigating to matching home activity
-        if (state == 1) {
-            Intent toHome = new Intent(MainActivity.this, HomeListener.class);
-            startActivity(toHome);
-        } else if (state == 2) {
-            Intent toHome = new Intent(MainActivity.this, CounselorMain.class);
-            startActivity(toHome);
-        } else {
-            Intent toHome = new Intent(MainActivity.this, HomeTalker.class);
-            startActivity(toHome);
-        }
-    }
-    //counselor screen button for testing purposes.
-    public void counselorButton(View view) {
-        Intent mainToCounselor = new Intent(this, CounselorMain.class);
-        startActivity(mainToCounselor);
     }
 }
