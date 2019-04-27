@@ -166,9 +166,9 @@ public class Chat extends AppCompatActivity {
                     latestTime = model.getMessageTime();
                     TimeUnit minutes;
                     long dif = latestTime - startTime;
-                    long min = TimeUnit.MILLISECONDS.toMinutes(dif);
-                    if (min > 1) {
-                        messageUser.setText("Penguins");
+                    long length = TimeUnit.MILLISECONDS.toMinutes(dif);
+                    if ((length % 30) == 0) {
+                        Snackbar.make(activity_chat, "You have been chatting for " + length + " minutes!", Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
