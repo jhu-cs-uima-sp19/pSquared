@@ -1,11 +1,14 @@
 package com.example.psquared;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -74,8 +77,10 @@ public class Chat extends AppCompatActivity {
 
     private void displayChatMessage() {
         ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
+
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
-            /*
+            Context context;
+
             @Override
             public ChatMessage getItem(int pos) {
                 return super.getItem(getCount() - 1 - pos);
@@ -90,21 +95,26 @@ public class Chat extends AppCompatActivity {
                     return 1;
                 }
             }
-            */
+            @Override
+            public View getView(int position, View view, ViewGroup viewGroup) {
+                LayoutInflater msgInflate = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+                ChatMessage msg = this.getItem(position);
+                if(this.getItemViewType(position) == 0) {
+                    view = msgInflate.inflate(R.layout.my_message,null);
+                } else {
+                    view = msgInflate.inflate(R.layout.your_message, null);
+                }
+                return view;
+            }
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                TextView  sentmessage, receivedmessage;
-                sentmessage = (TextView) v.findViewById(R.id.mymessage);
-                receivedmessage = (TextView) v.findViewById(R.id.yourmessage);
-                String me = settings.getString("name", "unknown");
-                if (model.getMessageUser().equals(me)) {
-                    sentmessage.setText(model.getMessageText());
-                    receivedmessage.setVisibility(View.INVISIBLE);
+                TextView  message;
+                if (this.getItemViewType(position) == 0) {
+                    message = v.findViewById(R.id.my_message_text);
                 } else {
-                    receivedmessage.setText(model.getMessageText());
-                    sentmessage.setVisibility(View.INVISIBLE);
+                    message = v.findViewById(R.id.your_message_text);
                 }
-
+                message.setText(model.getMessageText());
             }
         };
         listofMessage.setAdapter(adapter);
