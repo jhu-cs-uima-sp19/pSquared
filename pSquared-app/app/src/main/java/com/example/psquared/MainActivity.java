@@ -115,21 +115,17 @@ public class MainActivity extends AppCompatActivity {
                 //getting the listener value from the firebase database
                 long value = dataSnapshot.getValue(long.class);
                 Integer v = new Integer((int) value);
-                Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
 
                 //storing the listener information into the shared preference
                 myRef.removeEventListener(this);
                 switch (v) {
                     case 0:
-                        Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
                         startActivity(toTalker);
                         break;
                     case 1:
-                        Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
                         startActivity(toListener);
                         break;
                     case 2:
-                        Toast.makeText(getApplicationContext(), v.toString(), Toast.LENGTH_SHORT).show();
                         startActivity(toCounserlor);
                         break;
                     default:
