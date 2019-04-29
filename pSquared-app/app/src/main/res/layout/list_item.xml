@@ -5,29 +5,31 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:layout_marginTop="5dp"
-        android:layout_alignParentEnd="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="18dp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/bubble"
-        android:padding="10dp"
-        android:elevation="2dp"
         android:id="@+id/mymessage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/bubble"
+        android:elevation="2dp"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/white"
+        android:textSize="18dp" />
 
     <TextView
-        android:layout_marginTop="5dp"
-        android:layout_alignParentStart="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textSize="18dp"
-        android:textColor="@android:color/white"
-        android:background="@drawable/yourbubble"
-        android:padding="10dp"
-        android:elevation="2dp"
         android:id="@+id/yourmessage"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="100dp"
+        android:background="@drawable/yourbubble"
+        android:elevation="2dp"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/white"
+        android:textSize="18dp" />
 
 </RelativeLayout>

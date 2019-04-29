@@ -158,14 +158,19 @@ public class Chat extends AppCompatActivity {
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                TextView messageText;
+                TextView messageText, other;
                 String me = settings.getString("name", "unknown");
 
-                if (model.getMessageUser().equals(me)) {
+                /*if (model.getMessageUser().equals(me)) {
                     messageText = v.findViewById(R.id.mymessage);
+                    other = v.findViewById(R.id.yourmessage);
+                    other.setVisibility(View.GONE);
                 } else {
                     messageText = v.findViewById(R.id.yourmessage);
-                }
+                    other = v.findViewById(R.id.mymessage);
+                    other.setVisibility(View.GONE);
+                }*/
+                messageText = v.findViewById(R.id.mymessage);
                 messageText.setText(model.getMessageText());
 
                 if (startTime == -1) {
@@ -180,9 +185,6 @@ public class Chat extends AppCompatActivity {
                         Snackbar.make(activity_chat, "You have been chatting for " + dif + " minutes!", Snackbar.LENGTH_SHORT).show();
                     }
                 }
-
-                //messageTime.setText(""+getDateDiff(startTime,latestTime,TimeUnit.SECONDS));
-                //messageTime.setText(DateFormat.format("(HH:mm)",model.getMessageTime()));
             }
         };
         listofMessage.setAdapter(adapter);
