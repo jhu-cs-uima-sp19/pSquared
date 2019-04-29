@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -18,7 +19,9 @@ import android.widget.TextView;
 import android.text.format.DateFormat;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -154,24 +157,23 @@ public class Chat extends AppCompatActivity {
     }
 
     private void displayChatMessage() {
-        ListView listofMessage = (ListView)findViewById(R.id.list_of_message);
-        adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
+        RecyclerView listofMessage = findViewById(R.id.list_of_message);
+
+        /*adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView messageText, other;
                 String me = settings.getString("name", "unknown");
-
-                /*if (model.getMessageUser().equals(me)) {
+                if (model.getMessageUser().equals(me)) {
                     messageText = v.findViewById(R.id.mymessage);
                     other = v.findViewById(R.id.yourmessage);
-                    other.setVisibility(View.GONE);
                 } else {
                     messageText = v.findViewById(R.id.yourmessage);
                     other = v.findViewById(R.id.mymessage);
-                    other.setVisibility(View.GONE);
-                }*/
-                messageText = v.findViewById(R.id.mymessage);
+                }
+                other.setVisibility(View.GONE);
                 messageText.setText(model.getMessageText());
+
 
                 if (startTime == -1) {
                     startTime = model.getMessageTime();
@@ -186,7 +188,7 @@ public class Chat extends AppCompatActivity {
                     }
                 }
             }
-        };
+        };*/
         listofMessage.setAdapter(adapter);
     }
 
