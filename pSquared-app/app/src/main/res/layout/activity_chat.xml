@@ -36,6 +36,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:hint="Message"
             android:id="@+id/input"
             />

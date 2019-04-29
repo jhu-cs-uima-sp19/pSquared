@@ -158,18 +158,14 @@ public class Chat extends AppCompatActivity {
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                TextView messageText,messageUser,messageTime;
-                messageText = (TextView) v.findViewById(R.id.message_text);
-                messageUser = (TextView) v.findViewById(R.id.message_user);
-                messageTime = (TextView) v.findViewById(R.id.message_time);
+                TextView messageText;
                 String me = settings.getString("name", "unknown");
 
                 if (model.getMessageUser().equals(me)) {
-                    messageUser.setText(me);
+                    messageText = v.findViewById(R.id.mymessage);
                 } else {
-                    messageUser.setText("Anonymous");
+                    messageText = v.findViewById(R.id.yourmessage);
                 }
-
                 messageText.setText(model.getMessageText());
 
                 if (startTime == -1) {
@@ -177,11 +173,11 @@ public class Chat extends AppCompatActivity {
                     latestTime = startTime;
                 } else {
                     latestTime = model.getMessageTime();
-                    TimeUnit minutes;
-                    long dif = latestTime - startTime;
-                    long length = TimeUnit.MILLISECONDS.toMinutes(dif);
-                    if ((length % 30) == 0) {
-                        Snackbar.make(activity_chat, "You have been chatting for " + length + " minutes!", Snackbar.LENGTH_SHORT).show();
+                    long mil = latestTime - startTime;
+                    long min = (mil/1000)/60;
+                    int dif = (int)min;
+                    if ((dif % 30 == 0) && (dif !=0)) {
+                        Snackbar.make(activity_chat, "You have been chatting for " + dif + " minutes!", Snackbar.LENGTH_SHORT).show();
                     }
                 }
 
