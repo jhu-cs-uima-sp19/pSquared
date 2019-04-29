@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -44,21 +45,21 @@ public class Chat extends AppCompatActivity {
     long startTime = -1;
     long latestTime = -1;
 
-    private boolean backexit = false;
+    private boolean exitChat = false;
     @Override
     public void onBackPressed() {
-        if (backexit) {
+        if (exitChat) {
             chat = FirebaseDatabase.getInstance().getReference(id);
             chat.removeValue();
             finish();
         } else {
-            Toast.makeText(this, "Press Back again to Leave the Chat.",
+            Toast.makeText(this, "Press back again to leave the chat.",
                     Toast.LENGTH_SHORT).show();
-            backexit = true;
+            exitChat = true;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    backexit = false;
+                    exitChat = false;
                 }
             }, 10 * 1000);
         }
@@ -85,6 +86,7 @@ public class Chat extends AppCompatActivity {
         send = (FloatingActionButton)findViewById(R.id.fabsend);
         exit = (FloatingActionButton)findViewById(R.id.fabexit);
 
+
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,9 +100,20 @@ public class Chat extends AppCompatActivity {
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                chat = FirebaseDatabase.getInstance().getReference(id);
-                chat.removeValue();
-                finish();
+                if (exitChat) {
+                    chat = FirebaseDatabase.getInstance().getReference(id);
+                    chat.removeValue();
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Press exit again to leave the chat.", Toast.LENGTH_SHORT).show();
+                    exitChat = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            exitChat = false;
+                        }
+                    }, 10 * 1000);
+                }
             }
         });
         
