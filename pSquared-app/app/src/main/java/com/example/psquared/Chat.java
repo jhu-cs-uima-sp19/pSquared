@@ -80,7 +80,7 @@ public class Chat extends AppCompatActivity {
 
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             Context context;
-
+/*
             @Override
             public ChatMessage getItem(int pos) {
                 return super.getItem(getCount() - 1 - pos);
@@ -105,15 +105,16 @@ public class Chat extends AppCompatActivity {
                     view = msgInflate.inflate(R.layout.your_message, null);
                 }
                 return view;
-            }
+            }*/
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView  message;
-                if (this.getItemViewType(position) == 0) {
+                /*if (this.getItemViewType(position) == 0) {
                     message = v.findViewById(R.id.my_message_text);
                 } else {
                     message = v.findViewById(R.id.your_message_text);
-                }
+                }*/
+                message = v.findViewById(R.id.mymessage);
                 message.setText(model.getMessageText());
             }
         };
