@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,7 +24,7 @@ public class Settings extends AppCompatActivity {
     private String email;
     private String password;
     private FirebaseAuth mAuth;
-    EditText emailText;
+    private TextView emailText;
     EditText pwdText;
 
     @Override
@@ -43,7 +44,7 @@ public class Settings extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         email = settings.getString("email", "email");
-        emailText = findViewById(R.id.email_input);
+        emailText = findViewById(R.id.email_text);
         emailText.setText(email);
 
         password = settings.getString("password", "password");
