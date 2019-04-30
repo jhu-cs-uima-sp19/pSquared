@@ -1,7 +1,12 @@
 package com.example.psquared;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
@@ -40,6 +45,9 @@ public class HomeListener extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     static boolean availableAsTalker;
     static boolean availableAsListener;
+    private boolean canSendPushNotifs;
+    private boolean noWaitingTalkers = true;
+
     String email;
     int count = 0;
     final Timer T = new Timer();
@@ -89,6 +97,10 @@ public class HomeListener extends AppCompatActivity {
 
         availableAsTalker = false;
         availableAsListener = false;
+
+        //set up push notifications
+        canSendPushNotifs = true;
+        pushNotifications();
     }
 
     public void time() {
@@ -385,6 +397,87 @@ public class HomeListener extends AppCompatActivity {
         listenBtn.setTextSize(55);
         tv.setVisibility(View.INVISIBLE);
         listenTimer.setVisibility(View.INVISIBLE);
+    }
+
+    public void pushNotifications() {
+
+        final ValueEventListener talkerWaiting = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //loop through talkers
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // ignore dummy entry of database
+                    if (!snapshot.getKey().equals("dummy")) {
+                        noWaitingTalkers = false;
+                        break;
+                    }
+                    noWaitingTalkers = true;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        availableTalkers.addValueEventListener(talkerWaiting);
+
+        final ValueEventListener listenerAvailable = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //loop through listeners
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    // ignore dummy entry of database
+                    if (!snapshot.getKey().equals("dummy")) {
+
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
+                                && noWaitingTalkers
+                                && canSendPushNotifs
+                                && settings.getBoolean("notify", true)) {
+
+                            String CHANNEL_ID = "my_channel_01";
+                            CharSequence name = "my_channel";
+                            String Description = "This is my channel";
+                            int importance = NotificationManager.IMPORTANCE_HIGH;
+                            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+                            mChannel.setDescription(Description);
+                            mChannel.enableLights(true);
+                            mChannel.setLightColor(Color.RED);
+                            mChannel.enableVibration(true);
+                            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                            mChannel.setShowBadge(false);
+                            notificationManager.createNotificationChannel(mChannel);
+
+                            //NotificationManager notif = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            Notification notify = new Notification.Builder(getApplicationContext())
+                                    .setContentTitle("Listener available on pSquared!")
+                                    .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
+                                    .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
+
+                            notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                            notificationManager.notify(0, notify);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        availableListeners.addValueEventListener(listenerAvailable);
+
     }
 
     public void onHoverButtons() {

@@ -6,9 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,9 +39,12 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
         //Screen pops off when back button is clicked
         onTalk();
+
+        configureNotify();
     }
 
     @Override
@@ -52,6 +57,11 @@ public class Settings extends AppCompatActivity {
         email = settings.getString("email", "email");
         emailText = findViewById(R.id.email_text);
         emailText.setText(email);
+
+        password = settings.getString("password", "password");
+        pwdText = (EditText)findViewById(R.id.password);
+        pwdText.setText(password);
+
 
         change = (TextView) findViewById(R.id.changepassword);
         change.setOnClickListener(new View.OnClickListener() {
@@ -93,6 +103,7 @@ public class Settings extends AppCompatActivity {
 
     }
 
+    // if the user is listed as available in Firebase, make them unavailable
     private void makeUnavailable() {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         // Toast.makeText(getApplicationContext(), email, Toast.LENGTH_SHORT).show();
@@ -139,4 +150,19 @@ public class Settings extends AppCompatActivity {
             }
         });
     }
+
+    // apply and save notification settings.
+    private void configureNotify() {
+        Switch not = findViewById(R.id.not1);
+        not.setChecked(settings.getBoolean("notify", true));
+        not.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean("notify", isChecked);
+                editor.commit();
+
+            }
+        });
+    }
+
 }

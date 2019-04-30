@@ -1,7 +1,12 @@
 package com.example.psquared;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -37,6 +42,8 @@ public class HomeTalker extends AppCompatActivity {
     private DatabaseReference curUser;
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
+    private boolean canSendPushNotifs;
+    private boolean noWaitingTalkers = true;
 
     String email;
     int count = 0;
@@ -47,6 +54,9 @@ public class HomeTalker extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_talker);
         availableAsTalker = false;
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
+        editor.commit();
         //Wait for talker button to be clicked
         onTalk();
 
@@ -74,6 +84,10 @@ public class HomeTalker extends AppCompatActivity {
         availableListeners = database.getReference("availableListeners");
 
         availableAsTalker = false;
+
+        //set up push notifications
+        canSendPushNotifs = true;
+        pushNotifications();
     }
 
     public void time() {
@@ -117,10 +131,11 @@ public class HomeTalker extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                // a counter that counts the position of the available talker in the arry
-                int counter = 0;
+                // a counter that counts the position of the available talker in the array
+                //int counter = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email) && counter == 0) {
+                    if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email)) {
+                    //if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email) && counter == 0) {
                         Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
                         editor.putBoolean("canLook", true);
                         editor.commit();
@@ -128,7 +143,7 @@ public class HomeTalker extends AppCompatActivity {
                     } else if (!snapshot.getKey().equals("dummy") && !snapshot.getValue().toString().equals(email)) {
                         editor.putBoolean("canLook", false);
                         editor.commit();
-                        counter ++;
+                        //counter ++;
                         break;
                     }
                 }
@@ -140,7 +155,7 @@ public class HomeTalker extends AppCompatActivity {
             }
         };
 
-        // create listener for finding  an available listener
+        // create listener for finding an available listener
         final ValueEventListener listen = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -149,7 +164,7 @@ public class HomeTalker extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
+                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false)) {
 
                         //post chat to to database for listener to find
                         DatabaseReference chatdb = database.getReference("chats").child(snapshot.getValue().toString());
@@ -192,11 +207,14 @@ public class HomeTalker extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                //Don't send any push notifications if button is clicked
+                canSendPushNotifs = false;
+
                 //reset timer
                 count = 0;
 
                 // creating database reference to list of available listeners
-                final DatabaseReference availableListeners = database.getReference("availableListeners");
+                //final DatabaseReference availableListeners = database.getReference("availableListeners");
 
                 if (!availableAsTalker) {
                     talkBtn.setAlpha(.5f);
@@ -204,9 +222,6 @@ public class HomeTalker extends AppCompatActivity {
                     talkBtn.setTextSize(30);
                     tv.setVisibility(View.VISIBLE);
                     talkTimer.setVisibility(View.VISIBLE);
-
-                    //TIMER
-                    //myTimer.scheduleAtFixedRate(task, 1000, 1000);
 
                     //changing Firebase database values
                     curUser = availableTalkers.child(Long.toString(System.currentTimeMillis()));
@@ -229,12 +244,92 @@ public class HomeTalker extends AppCompatActivity {
                     availableAsTalker = false;
                     //reset timer
                     count = 0;
+                    //Can send push notifications again
+                    canSendPushNotifs = true;
+                }
+            }
+        });
+    }
+
+    public void pushNotifications() {
+
+        final ValueEventListener talkerWaiting = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //loop through talkers
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // ignore dummy entry of database
+                    if (!snapshot.getKey().equals("dummy")) {
+                        noWaitingTalkers = false;
+                        break;
+                    }
+                    noWaitingTalkers = true;
                 }
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        };
 
-        });
+        availableTalkers.addValueEventListener(talkerWaiting);
+
+        final ValueEventListener listenerAvailable = new ValueEventListener() {
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                //loop through listeners
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    // ignore dummy entry of database
+                    if (!snapshot.getKey().equals("dummy")) {
+
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
+                                && noWaitingTalkers
+                                && canSendPushNotifs
+                                && settings.getBoolean("notify", true)) {
+
+                            String CHANNEL_ID = "my_channel_01";
+                            CharSequence name = "my_channel";
+                            String Description = "This is my channel";
+                            int importance = NotificationManager.IMPORTANCE_HIGH;
+                            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+                            mChannel.setDescription(Description);
+                            mChannel.enableLights(true);
+                            mChannel.setLightColor(Color.RED);
+                            mChannel.enableVibration(true);
+                            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                            mChannel.setShowBadge(false);
+                            notificationManager.createNotificationChannel(mChannel);
+
+                            //NotificationManager notif = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            Notification notify = new Notification.Builder(getApplicationContext())
+                                    .setContentTitle("Listener available on pSquared!")
+                                    .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
+                                    .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
+
+                            notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                            notificationManager.notify(0, notify);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
+        availableListeners.addValueEventListener(listenerAvailable);
+
     }
 
     /**
@@ -283,4 +378,5 @@ public class HomeTalker extends AppCompatActivity {
         tv.setVisibility(View.INVISIBLE);
         talkTimer.setVisibility(View.INVISIBLE);
     }
+
 }
