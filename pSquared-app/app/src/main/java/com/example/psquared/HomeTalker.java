@@ -62,11 +62,13 @@ public class HomeTalker extends AppCompatActivity {
         super.onStart();
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
+        editor.putBoolean("canLook", true);
+        editor.commit();
+
         email = settings.getString("email", "email");
         if (email.equals("email")) {
             Toast.makeText(getApplicationContext(), "data error: email storage error", Toast.LENGTH_SHORT).show();
         }
-
         database = FirebaseDatabase.getInstance();
         availableTalkers = database.getReference("availableTalkers");
         availableListeners = database.getReference("availableListeners");

@@ -54,7 +54,7 @@ public class HomeListener extends AppCompatActivity {
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
         email = settings.getString("email", "email");
-        editor.putBoolean("canLook", false);
+        editor.putBoolean("canLook", true);
         editor.commit();
 
         availableAsTalker = false;
