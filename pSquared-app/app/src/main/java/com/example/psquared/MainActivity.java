@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //toListener();
+
         //set login buttons
         loginb = (Button) findViewById(R.id.loginButton);
         loginb.setOnClickListener(new View.OnClickListener() {
@@ -170,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(toHome);
         }
     }
-    //counselor screen button for testing purposes.
-    public void counselorButton(View view) {
-        Intent mainToCounselor = new Intent(this, CounselorMain.class);
-        startActivity(mainToCounselor);
+    //for testing purposes.
+    public void toListener() {
+        Intent mainToListener = new Intent(this, HomeListener.class);
+        startActivity(mainToListener);
     }
 }

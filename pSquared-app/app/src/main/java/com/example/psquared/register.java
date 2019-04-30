@@ -91,7 +91,7 @@ public class register extends AppCompatActivity {
         });
 
         //Screen pops off when back button is clicked
-        onTalk();
+        onBack();
 
     }
 
@@ -130,7 +130,7 @@ public class register extends AppCompatActivity {
     /**
      * Listener presses the back button.
      */
-    public void onTalk() {
+    public void onBack() {
         final ImageButton backBtn = findViewById(R.id.back);
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,5 +139,4 @@ public class register extends AppCompatActivity {
             }
         });
     }
-
 }

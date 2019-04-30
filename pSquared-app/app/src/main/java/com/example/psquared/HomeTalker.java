@@ -24,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
@@ -38,18 +39,8 @@ public class HomeTalker extends AppCompatActivity {
     private SharedPreferences.Editor editor;
 
     String email;
-
-    //TIMER
-    //Components for installing a timer that appears at button click
-    /*TextView timerTV = findViewById(R.id.timerText);
-    int secondsPassed = 0;
-    Timer myTimer = new Timer();
-    TimerTask task = new TimerTask() {
-        public void run() {
-            secondsPassed++;
-            timerTV.setText(secondsPassed);
-        }
-    };*/
+    int count = 0;
+    final Timer T = new Timer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +52,9 @@ public class HomeTalker extends AppCompatActivity {
 
         //Wait for overflow button to be clicked
         overflowClicked();
+
+        //Timer starts to let user know how long they've been waiting
+        time();
     }
 
     @Override
@@ -80,12 +74,41 @@ public class HomeTalker extends AppCompatActivity {
         availableAsTalker = false;
     }
 
+    public void time() {
+
+        final TextView talkTimer = findViewById(R.id.talkTimer);
+
+        //Count time of wait
+        T.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        long hours = TimeUnit.SECONDS.toHours(count);
+                        String hourFormatted = String.format("%02d", hours);
+                        long minutes = TimeUnit.SECONDS.toMinutes(count) - (hours * 60);
+                        String minFormatted = String.format("%02d", minutes);
+                        long seconds = TimeUnit.SECONDS.toSeconds(count) - (minutes *60);
+                        String secFormatted = String.format("%02d", seconds);
+                        talkTimer.setText("You have been waiting for "+
+                                hourFormatted + ":" + minFormatted + ":" + secFormatted);
+                        count++;
+                    }
+                });
+            }
+        }, 1000, 1000);
+    }
+
     /**
      * Talker presses the Talk button.
      */
     public void onTalk() {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopText);
+        final TextView talkTimer = findViewById(R.id.talkTimer);
 
         // create listener for finding  an available listener
         final ValueEventListener listen = new ValueEventListener() {
@@ -136,6 +159,9 @@ public class HomeTalker extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                //reset timer
+                count = 0;
+
                 // creating database reference to list of available listeners
                 final DatabaseReference availableListeners = database.getReference("availableListeners");
 
@@ -144,6 +170,7 @@ public class HomeTalker extends AppCompatActivity {
                     talkBtn.setText("Connecting to a Listener...");
                     talkBtn.setTextSize(30);
                     tv.setVisibility(View.VISIBLE);
+                    talkTimer.setVisibility(View.VISIBLE);
 
                     //TIMER
                     //myTimer.scheduleAtFixedRate(task, 1000, 1000);
@@ -166,6 +193,8 @@ public class HomeTalker extends AppCompatActivity {
                     availableListeners.removeEventListener(listen);
                     resetTalk();
                     availableAsTalker = false;
+                    //reset timer
+                    count = 0;
                 }
             }
 
@@ -211,10 +240,13 @@ public class HomeTalker extends AppCompatActivity {
     public void resetTalk() {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopText);
+        final TextView talkTimer = findViewById(R.id.talkTimer);
 
+        count = 0;
         talkBtn.setAlpha(1f);
         talkBtn.setText("Talk");
         talkBtn.setTextSize(55);
         tv.setVisibility(View.GONE);
+        talkTimer.setVisibility(View.GONE);
     }
 }

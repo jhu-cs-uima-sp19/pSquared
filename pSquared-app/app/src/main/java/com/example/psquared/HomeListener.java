@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -23,6 +24,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class HomeListener extends AppCompatActivity {
@@ -36,6 +41,9 @@ public class HomeListener extends AppCompatActivity {
     static boolean availableAsTalker;
     static boolean availableAsListener;
     String email;
+    int count = 0;
+    final Timer T = new Timer();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +59,12 @@ public class HomeListener extends AppCompatActivity {
 
         //Wait for overflow button to be clicked
         overflowClicked();
+
+        //Will make buttons change on hover
+        onHoverButtons();
+
+        //timer
+        time();
     }
 
     @Override
@@ -71,6 +85,40 @@ public class HomeListener extends AppCompatActivity {
         availableAsTalker = false;
         availableAsListener = false;
     }
+
+    public void time() {
+
+        final TextView talkTimer = findViewById(R.id.talkTimer);
+        final TextView listenTimer = findViewById(R.id.listenTimer);
+
+        //Create timer to let user know how long they've been waiting
+        //Timer T = new Timer();
+        //Count time of wait
+        T.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        long hours = TimeUnit.SECONDS.toHours(count);
+                        String hourFormatted = String.format("%02d", hours);
+                        long minutes = TimeUnit.SECONDS.toMinutes(count) - (hours * 60);
+                        String minFormatted = String.format("%02d", minutes);
+                        long seconds = TimeUnit.SECONDS.toSeconds(count) - (minutes *60);
+                        String secFormatted = String.format("%02d", seconds);
+                        talkTimer.setText("You have been waiting for "+
+                                hourFormatted + ":" + minFormatted + ":" + secFormatted);
+                        listenTimer.setText("You have been waiting for "+
+                                hourFormatted + ":" + minFormatted + ":" + secFormatted);
+                        count++;
+                    }
+                });
+            }
+        }, 1000, 1000);
+    }
+
     /**
      * Overflow buttons shows pop-up menu that will lead to Settings or About pages.
      */
@@ -100,7 +148,6 @@ public class HomeListener extends AppCompatActivity {
                 popup.show();
             }
         });
-
     }
 
     /**
@@ -109,6 +156,7 @@ public class HomeListener extends AppCompatActivity {
     public void onTalk() {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopTalk);
+        final TextView timerText = findViewById(R.id.talkTimer);
 
         //creating listener for finding available listeners.
         final ValueEventListener listen = new ValueEventListener() {
@@ -169,6 +217,8 @@ public class HomeListener extends AppCompatActivity {
                         talkBtn.setText("Connecting to a Listener...");
                         talkBtn.setTextSize(30);
                         tv.setVisibility(View.VISIBLE);
+                        count = 0;
+                        timerText.setVisibility(View.VISIBLE);
 
                         //changing firebase database values
                         curUserTalker = availableTalkers.child(email.substring(0, email.indexOf("@")));
@@ -202,12 +252,15 @@ public class HomeListener extends AppCompatActivity {
     public void resetTalk() {
         final Button talkBtn = findViewById(R.id.talk);
         final TextView tv = findViewById(R.id.pressToStopTalk);
+        final TextView timerText = findViewById(R.id.talkTimer);
+        count = 0; //reset waiting time to zero
+        //T.cancel(); //stop timer
 
         talkBtn.setAlpha(1f);
         talkBtn.setText("Talk");
         talkBtn.setTextSize(55);
         tv.setVisibility(View.GONE);
-
+        timerText.setVisibility(View.GONE);
     }
 
     /**
@@ -216,6 +269,9 @@ public class HomeListener extends AppCompatActivity {
     public void onListen() {
         final Button listenBtn = findViewById(R.id.listen);
         final TextView tv = findViewById(R.id.pressToStopListen);
+        final TextView listenTimer = findViewById(R.id.listenTimer);
+
+        //Things to execute when Listen button is clicked
         listenBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,6 +283,8 @@ public class HomeListener extends AppCompatActivity {
                         listenBtn.setText("Connecting to a Talker...");
                         listenBtn.setTextSize(30);
                         tv.setVisibility(View.VISIBLE);//changing firebase database values
+                        count = 0;
+                        listenTimer.setVisibility(View.VISIBLE);
 
                         curUserListener = availableListeners.child(email.substring(0, email.indexOf("@")));
                         curUserListener.setValue(email);
@@ -281,29 +339,35 @@ public class HomeListener extends AppCompatActivity {
     public void resetListen() {
         final Button listenBtn = findViewById(R.id.listen);
         final TextView tv = findViewById(R.id.pressToStopListen);
+        final TextView listenTimer = findViewById(R.id.listenTimer);
 
+        count = 0; //reset waiting time
+        //T.cancel(); //stop timer
         listenBtn.setAlpha(1f);
         listenBtn.setText("Listen");
         listenBtn.setTextSize(55);
         tv.setVisibility(View.GONE);
+        listenTimer.setVisibility(View.GONE);
     }
 
-    //Stuff I'm just trying out for more efficient code-writing.
-    //May not use this part.
-    public void onClick(boolean isTalk) {
-        //Locate both buttons
+    public void onHoverButtons() {
         final Button talkBtn = findViewById(R.id.talk);
         final Button listenBtn = findViewById(R.id.listen);
 
-        //Change button attributes
-        talkBtn.setAlpha(0.5f);
-        listenBtn.setAlpha(0.5f);
-        if (isTalk) {
-            talkBtn.setText("Connecting to a Listener...");
-            talkBtn.setTextSize(30);
-        } else {
-            listenBtn.setText("Connecting to a Talker...");
-            listenBtn.setTextSize(30);
-        }
+        talkBtn.setOnHoverListener((new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                talkBtn.setAlpha(.2f);
+                return true;
+            }
+        }));
+
+        listenBtn.setOnHoverListener((new View.OnHoverListener() {
+            @Override
+            public boolean onHover(View v, MotionEvent event) {
+                listenBtn.setAlpha(.2f);
+                return true;
+            }
+        }));
     }
 }
