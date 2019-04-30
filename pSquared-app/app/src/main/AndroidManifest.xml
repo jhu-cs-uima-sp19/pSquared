@@ -10,15 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Statistics"></activity>
-        <activity android:name=".Chat" />
-        <activity android:name=".About" />
-        <activity android:name=".Settings" />
-        <activity android:name=".register" />
-        <activity android:name=".HomeTalker" />
-        <activity android:name=".HomeListener" />
-        <activity android:name=".ListenerDatabase" />
-        <activity android:name=".CounselorMain" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".Chat" android:screenOrientation="portrait"/>
+        <activity android:name=".About" android:screenOrientation="portrait"/>
+        <activity android:name=".Settings" android:screenOrientation="portrait"/>
+        <activity android:name=".register" android:screenOrientation="portrait"/>
+        <activity android:name=".HomeTalker" android:screenOrientation="portrait"/>
+        <activity android:name=".HomeListener" android:screenOrientation="portrait"/>
+        <activity android:name=".ListenerDatabase" android:screenOrientation="portrait"/>
+        <activity android:name=".CounselorMain" android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity" android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
