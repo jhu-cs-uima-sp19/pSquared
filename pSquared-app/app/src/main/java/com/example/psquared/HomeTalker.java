@@ -158,8 +158,8 @@ public class HomeTalker extends AppCompatActivity {
                         listener.removeValue();
 
                         // remove yourself from available listeners
-                        availableListeners.child(snapshot.getKey()).removeValue();
-                        curUser.removeValue();
+                        // availableListeners.child(snapshot.getKey()).removeValue();
+                        // curUser.removeValue();
 
                         // remember chat ID for chatroom
                         editor.putString("curChat", snapshot.getValue().toString());
@@ -278,7 +278,7 @@ public class HomeTalker extends AppCompatActivity {
         talkBtn.setAlpha(1f);
         talkBtn.setText("Talk");
         talkBtn.setTextSize(55);
-        tv.setVisibility(View.GONE);
-        talkTimer.setVisibility(View.GONE);
+        tv.setVisibility(View.INVISIBLE);
+        talkTimer.setVisibility(View.INVISIBLE);
     }
 }

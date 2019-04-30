@@ -296,8 +296,8 @@ public class HomeListener extends AppCompatActivity {
         talkBtn.setAlpha(1f);
         talkBtn.setText("Talk");
         talkBtn.setTextSize(55);
-        tv.setVisibility(View.GONE);
-        timerText.setVisibility(View.GONE);
+        tv.setVisibility(View.INVISIBLE);
+        timerText.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -383,8 +383,8 @@ public class HomeListener extends AppCompatActivity {
         listenBtn.setAlpha(1f);
         listenBtn.setText("Listen");
         listenBtn.setTextSize(55);
-        tv.setVisibility(View.GONE);
-        listenTimer.setVisibility(View.GONE);
+        tv.setVisibility(View.INVISIBLE);
+        listenTimer.setVisibility(View.INVISIBLE);
     }
 
     public void onHoverButtons() {
