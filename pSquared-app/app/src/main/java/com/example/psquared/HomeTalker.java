@@ -80,6 +80,7 @@ public class HomeTalker extends AppCompatActivity {
 
         availableAsTalker = false;
 
+        //set up push notifications
         canSendPushNotifs = true;
         pushNotifications();
     }
