@@ -52,6 +52,9 @@ public class HomeTalker extends AppCompatActivity {
 
         //Wait for overflow button to be clicked
         overflowClicked();
+
+        //Timer starts to let user know how long they've been waiting
+        time();
     }
 
     @Override
