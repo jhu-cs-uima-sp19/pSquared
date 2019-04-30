@@ -31,7 +31,7 @@ public class Settings extends AppCompatActivity {
     private String password;
     private FirebaseAuth mAuth;
     private TextView emailText;
-    EditText pwdText;
+    private TextView change;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,10 +53,13 @@ public class Settings extends AppCompatActivity {
         emailText = findViewById(R.id.email_text);
         emailText.setText(email);
 
-        password = settings.getString("password", "password");
-        pwdText = (EditText)findViewById(R.id.password);
-        pwdText.setText(password);
-
+        change = (TextView) findViewById(R.id.changepassword);
+        change.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
     }
 
     /**

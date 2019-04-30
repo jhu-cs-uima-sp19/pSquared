@@ -8,11 +8,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-
-/**
- * Created by matteo on 25/01/2018.
- */
-
 public class MovableFloatingActionButton extends FloatingActionButton implements View.OnTouchListener {
 
     private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the FAB, so we need to account for this.

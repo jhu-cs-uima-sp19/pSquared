@@ -34,27 +34,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/email_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/email_label"
-        android:textColor="@color/textPrimaryColor"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Profile_Title" />
-
-    <TextView
-        android:id="@+id/password_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/password_label"
-        android:textColor="@color/textPrimaryColor"
-        app:layout_constraintStart_toStartOf="@+id/email_label"
-        app:layout_constraintTop_toBottomOf="@+id/email_label" />
-
-    <TextView
         android:id="@+id/Settings_Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -95,7 +74,6 @@
         android:id="@+id/sign_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
         android:background="@color/colorPrimary"
         android:drawableRight="@drawable/signout"
         android:onClick="signOut"
@@ -106,31 +84,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_label" />
-
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="225dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="88dp"
-        android:ems="10"
-        android:inputType="textWebPassword"
-        android:text="Name"
-        android:textColor="@color/textPrimaryColor"
-        android:visibility="visible"
-        app:layout_constraintBaseline_toBaselineOf="@+id/password_label"
-        app:layout_constraintStart_toEndOf="@+id/password_label" />
+        tools:layout_editor_absoluteY="225dp" />
 
     <TextView
         android:id="@+id/email_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="120dp"
-        android:layout_marginBottom="18dp"
+        android:layout_marginTop="21dp"
         android:text="email"
-        android:textAlignment="textStart"
+        android:textAlignment="center"
         android:textColor="@color/textPrimaryColor"
-        app:layout_constraintBottom_toTopOf="@+id/password"
-        app:layout_constraintStart_toEndOf="@+id/email_label" />
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Profile_Title" />
+
+    <TextView
+        android:id="@+id/changepassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="8dp"
+        android:clickable="true"
+        android:textAlignment="center"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_text"
+        tools:text="@string/change_pwd" />
 
 </android.support.constraint.ConstraintLayout>

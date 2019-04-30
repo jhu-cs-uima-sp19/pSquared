@@ -11,6 +11,7 @@
     <string name="email_label">Email:</string>
     <string name="password_label">Password:</string>
     <string name="settings_title">Settings</string>
+    <string name="change_pwd">Change password</string>
     <string name="active_listener_not">Notify me when a listener comes online</string>
     <string name="about_text">p-squared is the anonymous peer-listening chatline for the Johns
         Hopkins community. We offer a safe space for anyone to discuss anything from everyday
