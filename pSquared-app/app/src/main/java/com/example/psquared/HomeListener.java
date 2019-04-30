@@ -440,7 +440,8 @@ public class HomeListener extends AppCompatActivity {
 
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
                                 && noWaitingTalkers
-                                && canSendPushNotifs) {
+                                && canSendPushNotifs
+                                && settings.getBoolean("notify", true)) {
 
                             String CHANNEL_ID = "my_channel_01";
                             CharSequence name = "my_channel";

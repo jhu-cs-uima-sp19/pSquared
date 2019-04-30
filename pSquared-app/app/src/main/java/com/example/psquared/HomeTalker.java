@@ -54,6 +54,9 @@ public class HomeTalker extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_talker);
         availableAsTalker = false;
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
+        editor.commit();
         //Wait for talker button to be clicked
         onTalk();
 
@@ -67,8 +70,7 @@ public class HomeTalker extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        settings = getDefaultSharedPreferences(this);
-        editor = settings.edit();
+
         email = settings.getString("email", "email");
         if (email.equals("email")) {
             Toast.makeText(getApplicationContext(), "data error: email storage error", Toast.LENGTH_SHORT).show();
@@ -159,7 +161,7 @@ public class HomeTalker extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
+                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false)) {
 
                         //post chat to to database for listener to find
                         DatabaseReference chatdb = database.getReference("chats").child(snapshot.getValue().toString());
@@ -287,7 +289,8 @@ public class HomeTalker extends AppCompatActivity {
 
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
                                 && noWaitingTalkers
-                                && canSendPushNotifs) {
+                                && canSendPushNotifs
+                                && settings.getBoolean("notify", true)) {
 
                             String CHANNEL_ID = "my_channel_01";
                             CharSequence name = "my_channel";
@@ -372,4 +375,5 @@ public class HomeTalker extends AppCompatActivity {
         tv.setVisibility(View.GONE);
         talkTimer.setVisibility(View.GONE);
     }
+
 }

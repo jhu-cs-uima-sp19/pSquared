@@ -146,12 +146,13 @@ public class Settings extends AppCompatActivity {
     // apply and save notification settings.
     private void configureNotify() {
         Switch not = findViewById(R.id.not1);
-        not.setChecked(settings.getBoolean("notify", false));
+        not.setChecked(settings.getBoolean("notify", true));
         not.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 editor.putBoolean("notify", isChecked);
                 editor.commit();
+
             }
         });
     }
