@@ -110,20 +110,48 @@ public class HomeTalker extends AppCompatActivity {
         final TextView tv = findViewById(R.id.pressToStopText);
         final TextView talkTimer = findViewById(R.id.talkTimer);
 
+        // checks to see if the talker is the first position in the queue
+        final ValueEventListener queuePosChecker = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // a counter that counts the position of the available talker in the arry
+                int counter = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email) && counter == 0) {
+                        Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
+                        editor.putBoolean("canLook", true);
+                        editor.commit();
+                        break;
+                    } else if (!snapshot.getKey().equals("dummy") && !snapshot.getValue().toString().equals(email)) {
+                        editor.putBoolean("canLook", false);
+                        editor.commit();
+                        counter ++;
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
         // create listener for finding  an available listener
         final ValueEventListener listen = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //loop through listeners
-                for (DataSnapshot snapshot: dataSnapshot.getChildren()) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy")) {
+                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
 
                         //post chat to to database for listener to find
-                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getKey());
-                        chatdb.setValue("placeholder text");
+                        DatabaseReference chatdb = database.getReference("chats").child(snapshot.getValue().toString());
+                        chatdb.setValue("meep");
 
                         //remove listener from available listeners
                         DatabaseReference listener = database.getReference("availaberListeners").child(snapshot.getKey());
@@ -134,8 +162,11 @@ public class HomeTalker extends AppCompatActivity {
                         curUser.removeValue();
 
                         // remember chat ID for chatroom
-                        editor.putString("curChat", snapshot.getKey());
+                        editor.putString("curChat", snapshot.getValue().toString());
                         editor.putString("name", email);
+
+                        // not available to look anymore
+                        editor.putBoolean("canLook", false);
                         editor.commit();
 
                         resetTalk();
@@ -176,7 +207,7 @@ public class HomeTalker extends AppCompatActivity {
                     //myTimer.scheduleAtFixedRate(task, 1000, 1000);
 
                     //changing Firebase database values
-                    curUser = availableTalkers.child(email.substring(0, email.indexOf("@")));
+                    curUser = availableTalkers.child(Long.toString(System.currentTimeMillis()));
                     curUser.setValue(email);
 
                     //changing boolean value to tell program button is selected
@@ -184,13 +215,14 @@ public class HomeTalker extends AppCompatActivity {
 
                     // add listener to database reference
                     availableListeners.addValueEventListener(listen);
-
+                    availableTalkers.addValueEventListener(queuePosChecker);
 
                 } else {
                     curUser.removeValue();
 
                     // stop listening for available listeners.
                     availableListeners.removeEventListener(listen);
+                    availableTalkers.removeEventListener(queuePosChecker);
                     resetTalk();
                     availableAsTalker = false;
                     //reset timer
