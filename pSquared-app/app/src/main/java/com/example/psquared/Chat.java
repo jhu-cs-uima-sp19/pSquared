@@ -161,16 +161,14 @@ public class Chat extends AppCompatActivity {
                 TextView messageText, other;
                 String me = settings.getString("name", "unknown");
 
-                /*if (model.getMessageUser().equals(me)) {
+                if (model.getMessageUser().equals(me)) {
                     messageText = v.findViewById(R.id.mymessage);
                     other = v.findViewById(R.id.yourmessage);
-                    other.setVisibility(View.GONE);
                 } else {
                     messageText = v.findViewById(R.id.yourmessage);
                     other = v.findViewById(R.id.mymessage);
-                    other.setVisibility(View.GONE);
-                }*/
-                messageText = v.findViewById(R.id.mymessage);
+                }
+                other.setVisibility(View.GONE);
                 messageText.setText(model.getMessageText());
 
                 if (startTime == -1) {
