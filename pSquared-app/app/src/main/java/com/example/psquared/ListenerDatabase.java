@@ -30,32 +30,81 @@ public class ListenerDatabase extends AppCompatActivity {
         startActivity(listenersToMain);
     }
 
-    public void toggleListener(View view) {
+    public void addListener(View view) {
         EditText editText = findViewById(R.id.editText);
-        String username = editText.getText().toString();
+        final String username = editText.getText().toString();
         DatabaseReference users = database.getReference("Users");
-        final DatabaseReference child = users.child(username);
-        child.addListenerForSingleValueEvent(new ValueEventListener() {
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot s : dataSnapshot.getChildren()) {
+                    if (username.equals(s.getKey())) {
+                        final DatabaseReference child = database.getReference().child("Users").child(username);
+                        child.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                //getting the listener value from the firebase database
+                                long value = dataSnapshot.getValue(long.class);
+                                Integer v = new Integer((int) value);
+                                if (v == 0) {
+                                    child.setValue(1);
+                                    Toast.makeText(getApplicationContext(), "Successfully converted to listener", Toast.LENGTH_SHORT).show();
+                                } else if (v == 1) {
+                                    Toast.makeText(getApplicationContext(), "User is already listener", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                //getting the listener value from the firebase database
-                long value = dataSnapshot.getValue(long.class);
-                Integer v = new Integer((int) value);
-                if (v == 0) {
-                    child.setValue(1);
-                    Toast.makeText(getApplicationContext(), "Successfully converted to listener", Toast.LENGTH_SHORT).show();
-                } else if (v == 1) {
-                    child.setValue(0);
-                    Toast.makeText(getApplicationContext(), "Successfully converted to talker", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
+    }
+    public void removeListener(View view) {
+        EditText editText = findViewById(R.id.editText);
+        final String username = editText.getText().toString();
+        final DatabaseReference users = database.getReference("Users");
+        users.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot s : dataSnapshot.getChildren()) {
+                    if (username.equals(s.getKey())) {
+                        final DatabaseReference child = database.getReference().child("Users").child(username);
+                        child.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                //getting the listener value from the firebase database
+                                long value = dataSnapshot.getValue(long.class);
+                                Integer v = new Integer((int) value);
+                                if (v == 0) {
+                                    Toast.makeText(getApplicationContext(), "User is already talker", Toast.LENGTH_SHORT).show();
+                                } else if (v == 1) {
+                                    child.setValue(0);
+                                    Toast.makeText(getApplicationContext(), "Successfully converted to talker", Toast.LENGTH_SHORT).show();
+                                }
+                                child.removeEventListener(this);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                            }
+                        });
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }
