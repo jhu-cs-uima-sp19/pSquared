@@ -6,11 +6,11 @@ public class ChatMessage {
     private String messageText;
     private String messageUser;
     private long messageTime;
+    private Date messageDate;
 
     public ChatMessage(String messageText, String messageUser) {
         this.messageText = messageText;
         this.messageUser = messageUser;
-
         messageTime = new Date().getTime();
     }
 
@@ -36,6 +36,10 @@ public class ChatMessage {
 
     public long getMessageTime() {
         return messageTime;
+    }
+
+    public Date getMessageDate() {
+        return messageDate;
     }
 
     public void setMessageTime(long messageTime) {

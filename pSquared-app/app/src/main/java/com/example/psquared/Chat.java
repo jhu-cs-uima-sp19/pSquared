@@ -4,10 +4,12 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,6 +27,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 
 public class Chat extends AppCompatActivity {
@@ -37,25 +42,35 @@ public class Chat extends AppCompatActivity {
     SharedPreferences.Editor editor;
     private DatabaseReference chat;
     private String id;
+    long startTime = -1;
+    long latestTime = -1;
 
-    private boolean backexit = false;
+    private boolean exitChat = false;
     @Override
     public void onBackPressed() {
-        if (backexit) {
+        if (exitChat) {
             chat = FirebaseDatabase.getInstance().getReference(id);
             chat.removeValue();
             finish();
         } else {
-            Toast.makeText(this, "Press Back again to Leave the Chat.",
+            Toast.makeText(this, "Press back again to leave the chat.",
                     Toast.LENGTH_SHORT).show();
-            backexit = true;
+            exitChat = true;
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    backexit = false;
+                    exitChat = false;
                 }
             }, 10 * 1000);
         }
+    }
+
+    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+        if (date1 == null) {
+            return 0;
+        }
+        long diffInMillies = date2.getTime() - date1.getTime();
+        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -67,32 +82,10 @@ public class Chat extends AppCompatActivity {
         editor = settings.edit();
         id = settings.getString("curChat", "fail");
         // initialize necessary objects
-        activity_chat = (RelativeLayout)findViewById(R.id.activity_chat);
-        send = (FloatingActionButton)findViewById(R.id.fabsend);
-        exit = (FloatingActionButton)findViewById(R.id.fabexit);
+        activity_chat = findViewById(R.id.activity_chat);
+        send = findViewById(R.id.fabsend);
+        exit = findViewById(R.id.fabexit);
 
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText input = (EditText)findViewById(R.id.input);
-                FirebaseDatabase.getInstance().getReference(id).push().setValue(new ChatMessage(input.getText().toString(),
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail()));
-                input.setText("");
-            }
-        });
-
-        exit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chat = FirebaseDatabase.getInstance().getReference(id);
-                chat.removeValue();
-                finish();
-            }
-        });
-        
-        Snackbar.make(activity_chat, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Snackbar.LENGTH_SHORT).show();
-        //load content
-        displayChatMessage();
         chat = FirebaseDatabase.getInstance().getReference(id);
         chat.addChildEventListener(new ChildEventListener() {
             @Override
@@ -108,7 +101,6 @@ public class Chat extends AppCompatActivity {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
-
                 finish();
             }
 
@@ -119,11 +111,45 @@ public class Chat extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
+                finish();
             }
 
         });
 
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText input = (EditText)findViewById(R.id.input);
+                FirebaseDatabase.getInstance().getReference(id).push().setValue(new ChatMessage(input.getText().toString(),
+                        FirebaseAuth.getInstance().getCurrentUser().getEmail()));
+                input.setText("");
+            }
+        });
+
+        exit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (exitChat) {
+                    chat = FirebaseDatabase.getInstance().getReference(id);
+                    chat.removeValue();
+                    finish();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Press exit again to leave the chat.", Toast.LENGTH_SHORT).show();
+                    exitChat = true;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            exitChat = false;
+                        }
+                    }, 10 * 1000);
+                }
+            }
+        });
+        
+        Snackbar.make(activity_chat, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Snackbar.LENGTH_SHORT).show();
+        //load content
+        displayChatMessage();
 
     }
 
@@ -132,20 +158,31 @@ public class Chat extends AppCompatActivity {
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,R.layout.list_item,FirebaseDatabase.getInstance().getReference(id)) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
-                TextView messageText,messageUser,messageTime;
-                messageText = (TextView) v.findViewById(R.id.message_text);
-                messageUser = (TextView) v.findViewById(R.id.message_user);
-                messageTime = (TextView) v.findViewById(R.id.message_time);
+                TextView messageText, other;
                 String me = settings.getString("name", "unknown");
 
                 if (model.getMessageUser().equals(me)) {
-                    messageUser.setText(me);
+                    messageText = v.findViewById(R.id.mymessage);
+                    other = v.findViewById(R.id.yourmessage);
                 } else {
-                    messageUser.setText("Anonymous Penguin");
+                    messageText = v.findViewById(R.id.yourmessage);
+                    other = v.findViewById(R.id.mymessage);
                 }
-
+                other.setVisibility(View.GONE);
                 messageText.setText(model.getMessageText());
-                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm)",model.getMessageTime()));
+
+                if (startTime == -1) {
+                    startTime = model.getMessageTime();
+                    latestTime = startTime;
+                } else {
+                    latestTime = model.getMessageTime();
+                    long mil = latestTime - startTime;
+                    long min = (mil/1000)/60;
+                    int dif = (int)min;
+                    if ((dif % 30 == 0) && (dif !=0)) {
+                        Snackbar.make(activity_chat, "You have been chatting for " + dif + " minutes!", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
             }
         };
         listofMessage.setAdapter(adapter);
