@@ -54,8 +54,8 @@
 
     <TextView
         android:id="@+id/listenTimer"
-        android:layout_width="wrap_content"
         android:layout_height="0dp"
+        android:layout_width="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="16dp"
@@ -87,29 +87,26 @@
 
     <Button
         android:id="@+id/talk"
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="75dp"
+        android:layout_width="0dp"
+        app:layout_constraintDimensionRatio="1:1"
         android:layout_marginTop="8dp"
-        android:layout_marginEnd="75dp"
         android:background="@drawable/grad_pink"
         android:fontFamily="serif"
         android:text="Talk"
         android:textColor="@android:color/white"
         android:textSize="55sp"
         app:layout_constraintBottom_toTopOf="@+id/talkTimer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/pressToStopTalk"
+        app:layout_constraintStart_toStartOf="@+id/pressToStopTalk"
         app:layout_constraintTop_toBottomOf="@+id/pressToStopTalk"
         app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/listen"
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="75dp"
-        android:layout_marginEnd="75dp"
+        android:layout_width="0dp"
+        app:layout_constraintDimensionRatio="1:1"
         android:layout_marginBottom="8dp"
         android:background="@drawable/grad_blue"
         android:fontFamily="serif"
@@ -117,9 +114,8 @@
         android:textColor="@android:color/white"
         android:textSize="55sp"
         app:layout_constraintBottom_toTopOf="@+id/listenTimer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/talk"
+        app:layout_constraintStart_toStartOf="@+id/talk"
         app:layout_constraintTop_toBottomOf="@+id/pressToStopListen"
         tools:visibility="visible" />
 
