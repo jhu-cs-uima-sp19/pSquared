@@ -82,10 +82,40 @@ public class Chat extends AppCompatActivity {
         editor = settings.edit();
         id = settings.getString("curChat", "fail");
         // initialize necessary objects
-        activity_chat = (RelativeLayout)findViewById(R.id.activity_chat);
-        send = (FloatingActionButton)findViewById(R.id.fabsend);
-        exit = (FloatingActionButton)findViewById(R.id.fabexit);
+        activity_chat = findViewById(R.id.activity_chat);
+        send = findViewById(R.id.fabsend);
+        exit = findViewById(R.id.fabexit);
 
+        chat = FirebaseDatabase.getInstance().getReference(id);
+        chat.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
+                finish();
+            }
+
+        });
 
         send.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,36 +150,6 @@ public class Chat extends AppCompatActivity {
         Snackbar.make(activity_chat, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Snackbar.LENGTH_SHORT).show();
         //load content
         displayChatMessage();
-        chat = FirebaseDatabase.getInstance().getReference(id);
-        chat.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                Snackbar.make(activity_chat, "Goodbye", Snackbar.LENGTH_SHORT).show();
-                finish();
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-
-        });
-
 
     }
 
