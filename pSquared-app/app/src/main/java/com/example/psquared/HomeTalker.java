@@ -159,6 +159,9 @@ public class HomeTalker extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                //reset timer
+                count = 0;
+
                 // creating database reference to list of available listeners
                 final DatabaseReference availableListeners = database.getReference("availableListeners");
 
@@ -190,6 +193,8 @@ public class HomeTalker extends AppCompatActivity {
                     availableListeners.removeEventListener(listen);
                     resetTalk();
                     availableAsTalker = false;
+                    //reset timer
+                    count = 0;
                 }
             }
 
