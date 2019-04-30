@@ -57,10 +57,10 @@ public class Settings extends AppCompatActivity {
         email = settings.getString("email", "email");
         emailText = findViewById(R.id.email_text);
         emailText.setText(email);
-
+        password = "password";
         password = settings.getString("password", "password");
-        pwdText = (EditText)findViewById(R.id.password);
-        pwdText.setText(password);
+        // EditText pwdText = findViewById(R.id.password);
+        // pwdText.setText(password);
 
 
         change = (TextView) findViewById(R.id.changepassword);
