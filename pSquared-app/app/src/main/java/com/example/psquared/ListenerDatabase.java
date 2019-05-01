@@ -9,8 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -202,20 +204,73 @@ public class ListenerDatabase extends AppCompatActivity {
         public LinearLayout root;
         public TextView username;
         public TextView accountType;
+        public Button changeStatus;
+        private View.OnClickListener buttonListener;
+        private final String BUTTONTALKER = "convert to listener";
+        private final String BUTTONLISTENER = "convert to talker";
+        private DatabaseReference mRef;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             root = itemView.findViewById(R.id.list_root);
             username = itemView.findViewById(R.id.Username);
             accountType = itemView.findViewById(R.id.accountType);
+            changeStatus = itemView.findViewById(R.id.changeStatus);
+
+            buttonListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue().toString().equals("1")) {
+                                changeStatus.setText(BUTTONTALKER);
+                                accountType.setText("Talker");
+                                mRef.setValue(0);
+
+                            } else if (dataSnapshot.getValue().toString().equals("0")) {
+                                changeStatus.setText(BUTTONLISTENER);
+                                accountType.setText("Listener");
+                                mRef.setValue(1);
+
+                            } else {
+                                Toast.makeText(getApplicationContext(), "an error has occurred", Toast.LENGTH_SHORT).show();
+
+                            }
+                            mRef.removeEventListener(this);
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+            };
+            changeStatus.setOnClickListener(buttonListener);
+
         }
 
         public void setUsername(String user) {
             username.setText(user);
+            mRef = database.getReference("Users").child(username.getText().toString());
+
         }
 
         public void setAccountType(String type) {
             accountType.setText(type);
+
+            if(type.equals("Talker")) {
+                changeStatus.setVisibility(View.VISIBLE);
+                changeStatus.setText(BUTTONTALKER);
+            } else if (type.equals("Listener")) {
+                changeStatus.setVisibility(View.VISIBLE);
+                changeStatus.setText(BUTTONLISTENER);
+            } else {
+                changeStatus.setVisibility(View.GONE);
+            }
         }
     }
 
