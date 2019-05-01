@@ -433,8 +433,10 @@ public class HomeListener extends AppCompatActivity {
                 //loop through listeners
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
+                    //Get my own email so I don't get a notification if I click Listener
+                    String myEmail = settings.getString("email", "email").substring(0, email.indexOf("@"));
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy")) {
+                    if (!snapshot.getKey().equals("dummy") && !snapshot.getValue().equals(myEmail)) {
 
                         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -458,7 +460,8 @@ public class HomeListener extends AppCompatActivity {
 
                             //NotificationManager notif = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                             Notification notify = new Notification.Builder(getApplicationContext())
-                                    .setContentTitle("Listener available on pSquared!")
+                                    //.setContentTitle("Listener available on pSquared!")
+                                    .setContentTitle(myEmail)
                                     .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
                                     .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
 
