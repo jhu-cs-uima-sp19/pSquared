@@ -94,7 +94,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="                           "
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/browser_actions_bg_grey"
         app:layout_constraintBottom_toTopOf="@+id/email_login"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

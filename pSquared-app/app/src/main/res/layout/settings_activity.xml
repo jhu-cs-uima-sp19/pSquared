@@ -75,7 +75,7 @@
         android:id="@+id/sign_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="19dp"
         android:background="@color/colorPrimary"
         android:drawableRight="@drawable/signout"
         android:onClick="signOut"
@@ -86,7 +86,24 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changepassword" />
+        app:layout_constraintTop_toBottomOf="@+id/changePassword" />
+
+    <Button
+        android:id="@+id/changePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorPrimary"
+        android:onClick="signOut"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Change Password"
+        android:textColor="@color/textPrimaryColor"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/email_text" />
 
     <TextView
         android:id="@+id/email_text"
@@ -100,21 +117,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/Profile_Title" />
-
-    <TextView
-        android:id="@+id/changepassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="8dp"
-        android:clickable="true"
-        android:textAlignment="center"
-        android:textColor="@color/textPrimaryColor"
-        android:textStyle="italic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_text"
-        tools:text="@string/change_pwd" />
 
 </android.support.constraint.ConstraintLayout>

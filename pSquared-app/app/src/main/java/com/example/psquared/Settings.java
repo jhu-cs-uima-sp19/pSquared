@@ -23,6 +23,11 @@ import android.widget.TextView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,7 +51,7 @@ public class Settings extends AppCompatActivity {
     private String email;
     private FirebaseAuth mAuth;
     private TextView emailText;
-    private TextView change;
+    private Button change;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,30 +79,40 @@ public class Settings extends AppCompatActivity {
         email = settings.getString("email", "email");
         emailText = findViewById(R.id.email_text);
         emailText.setText(email);
+
+        //Function to change password
+        changePwd();
+
         //password = "password";
         //password = settings.getString("password", "password");
         // EditText pwdText = findViewById(R.id.password);
         // pwdText.setText(password);
+    }
 
 
-        change = (TextView) findViewById(R.id.changepassword);
-        change.setText("Change password");
+    public void changePwd() {
+        change = findViewById(R.id.changePassword);
         change.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
-                View customView = inflater.inflate(R.layout.popup,null);
+                final View customView = inflater.inflate(R.layout.popup,null);
+
                 mPopupWindow = new PopupWindow(
                         customView,
                         RelativeLayout.LayoutParams.WRAP_CONTENT,
                         RelativeLayout.LayoutParams.WRAP_CONTENT
                 );
 
+                mPopupWindow.setFocusable(true);
+
                 if(Build.VERSION.SDK_INT>=21){
                     mPopupWindow.setElevation(5.0f);
                 }
-                ImageButton closeButton = (ImageButton) customView.findViewById(R.id.ib_close);
-                closeButton.setOnClickListener(new View.OnClickListener() {
+
+                //Exit without changing anything if user presses Cancel
+                Button cancelButton = customView.findViewById(R.id.cancel);
+                cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         // Dismiss the popup window
@@ -105,31 +120,78 @@ public class Settings extends AppCompatActivity {
                     }
                 });
 
+                //Exit with saved changes if user presses Save
                 Button save = customView.findViewById(R.id.save);
                 save.setOnClickListener(new View.OnClickListener() {
+
                     @Override
                     public void onClick(View view) {
-                        // Dismiss the popup window
-                        mPopupWindow.dismiss();
+
+                        //Find all user inputs in edit texts
+                        EditText oldPassword = customView.findViewById(R.id.oldPwd);
+                        EditText newPassword = customView.findViewById(R.id.newPwd);
+                        EditText confirmPassword = customView.findViewById(R.id.confirmPwd);
+                        String oldPwd = oldPassword.getText().toString();
+                        String newPwd = newPassword.getText().toString();
+                        String confirmPwd = confirmPassword.getText().toString();
+
+                        if (oldPwd.equals("") || newPwd.equals("") || confirmPwd.equals("")) {
+                            Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                        } else if (!oldPwd.equals(settings.getString("password", ""))) {
+                            Toast.makeText(getApplicationContext(), "Incorrect current password", Toast.LENGTH_SHORT).show();
+                        } else if (!newPwd.equals(confirmPwd)) {
+                            Toast.makeText(getApplicationContext(), "New Password does not match the Confirm Password", Toast.LENGTH_SHORT).show();
+                        } else { //everything is successful
+
+                            /*
+                            //Update in Shared Preferences
+                            editor.putString("password", newPwd);
+                            editor.commit();
+
+                            //Re-authenticate user in Firebase
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            String myEmail = settings.getString("email", "");
+                            String myPwd = settings.getString("password", "");
+                            AuthCredential credential = EmailAuthProvider
+                                    .getCredential(myEmail, myPwd);
+                            user.reauthenticate(credential)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(getApplicationContext(), "yes", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "no", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+
+                            //Update in Firebase
+                            //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            user.updatePassword(newPwd)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(getApplicationContext(), "Password successfully updated!", Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "Something went wrong.. password unchanged", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+
+                            // Dismiss the popup window
+                            mPopupWindow.dismiss();
+                            */
+                        }
                     }
                 });
-
-                /*
-                EditText oldpassword = customView.findViewById(R.id.oldpwd);
-                EditText newpassword = customView.findViewById(R.id.newpwd);
-                EditText confirmpasword = customView.findViewById(R.id.confirm);
-                String old = oldpassword.getText().toString();
-                String pwd = newpassword.getText().toString();
-                String confirm = confirmpasword.getText().toString();
-*/
 
                 mPopupWindow.showAtLocation(mLayout, Gravity.CENTER,0,0);
             }
 
         });
     }
-
-
 
     /**
      * Listener presses the back button.
