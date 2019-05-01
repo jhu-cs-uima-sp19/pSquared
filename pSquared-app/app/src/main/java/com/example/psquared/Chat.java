@@ -168,8 +168,19 @@ public class Chat extends AppCompatActivity {
                     messageText = v.findViewById(R.id.yourmessage);
                     other = v.findViewById(R.id.mymessage);
                 }
-                other.setVisibility(View.GONE);
+                //messageText.setVisibility(View.VISIBLE);
+                //other.setVisibility(View.GONE);
                 messageText.setText(model.getMessageText());
+                TextView mine = v.findViewById(R.id.mymessage);
+                if (mine.getText().toString().equals(model.getMessageText())) {
+                    mine.setVisibility(View.VISIBLE);
+                    TextView yours = v.findViewById(R.id.yourmessage);
+                    yours.setVisibility(View.GONE);
+                } else {
+                    mine.setVisibility(View.GONE);
+                    TextView yours = v.findViewById(R.id.yourmessage);
+                    yours.setVisibility(View.VISIBLE);
+                }
 
                 if (startTime == -1) {
                     startTime = model.getMessageTime();
