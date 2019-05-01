@@ -4,27 +4,59 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 public class ListenerDatabase extends AppCompatActivity {
     private FirebaseDatabase database;
+    private RecyclerView users;
+    private LinearLayoutManager linear;
+    private FirebaseRecyclerAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(getApplicationContext());
         setContentView(R.layout.activity_listener_database);
         database = FirebaseDatabase.getInstance();
+        users = findViewById(R.id.Users);
+        linear = new LinearLayoutManager(getApplicationContext());
+        users.setLayoutManager(linear);
+        users.setHasFixedSize(true);
+        fetch();
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
+
     public void backButton(View view) {
         Intent listenersToMain = new Intent(this, CounselorMain.class);
         startActivity(listenersToMain);
@@ -107,4 +139,84 @@ public class ListenerDatabase extends AppCompatActivity {
             }
         });
     }
+
+    private void fetch() {
+
+        Query query = database.getReference().child("Users");
+
+        FirebaseRecyclerOptions<User> options =
+                new FirebaseRecyclerOptions.Builder<User>()
+                        .setQuery(query, new SnapshotParser<User>() {
+                            String type;
+                            @NonNull
+                            @Override
+                            public User parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                switch (snapshot.getValue().toString()) {
+                                    case "0":
+                                        type = "Talker";
+                                        break;
+                                    case "1":
+                                        type = "Listener";
+                                        break;
+                                    case "2":
+                                        type = "Counselor";
+                                        break;
+                                    default:
+                                        type = "dummy";
+                                        break;
+                                }
+                                return new User(snapshot.getKey(),
+                                        type);
+                            }
+                        })
+                        .build();
+
+        adapter = new FirebaseRecyclerAdapter<User, UserViewHolder>(options) {
+            @Override
+            public UserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.user_item, parent, false);
+
+                return new UserViewHolder(view);
+            }
+
+
+            @Override
+            protected void onBindViewHolder(UserViewHolder holder, final int position, User model) {
+                holder.setAccountType(model.getType());
+                holder.setUsername(model.getId());
+
+
+                holder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Toast.makeText(getApplicationContext(), String.valueOf(position), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+        };
+        users.setAdapter(adapter);
+    }
+    public class UserViewHolder extends RecyclerView.ViewHolder {
+        public LinearLayout root;
+        public TextView username;
+        public TextView accountType;
+
+        public UserViewHolder(@NonNull View itemView) {
+            super(itemView);
+            root = itemView.findViewById(R.id.list_root);
+            username = itemView.findViewById(R.id.Username);
+            accountType = itemView.findViewById(R.id.accountType);
+        }
+
+        public void setUsername(String user) {
+            username.setText(user);
+        }
+
+        public void setAccountType(String type) {
+            accountType.setText(type);
+        }
+    }
+
 }
