@@ -184,7 +184,9 @@ public class HomeListener extends AppCompatActivity {
                 int counter = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email)&& counter == 0) {
-                        Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
+                        //
+                        //
+                        // Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
                         editor.putBoolean("canLook", true);
                         editor.commit();
                         break;

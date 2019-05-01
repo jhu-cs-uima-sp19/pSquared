@@ -136,7 +136,7 @@ public class HomeTalker extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email)) {
                     //if (!snapshot.getKey().equals("dummy") && snapshot.getValue().toString().equals(email) && counter == 0) {
-                        Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
+                        // Toast.makeText(getApplicationContext(), "you are the first in the queue", Toast.LENGTH_SHORT).show();
                         editor.putBoolean("canLook", true);
                         editor.commit();
                         break;
