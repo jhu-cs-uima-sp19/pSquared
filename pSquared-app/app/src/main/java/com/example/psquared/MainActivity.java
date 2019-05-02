@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         final DatabaseReference myRef = db.getReference("Users").child(email.substring(0, email.indexOf("@")));
 
         // create intents to redirect to home screens
-        final Intent toCounserlor = new Intent(MainActivity.this, CounselorMain.class);
+        final Intent toCounselor = new Intent(MainActivity.this, CounselorMain.class);
         final Intent toTalker = new Intent(MainActivity.this, HomeTalker.class);
         final Intent toListener = new Intent(MainActivity.this, HomeListener.class);
 
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(toListener);
                         break;
                     case 2:
-                        startActivity(toCounserlor);
+                        startActivity(toCounselor);
                         break;
                     default:
                         startActivity(toTalker);

@@ -286,37 +286,37 @@ public class HomeTalker extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy")) {
+                    if (!snapshot.getKey().equals("dummy")
+                            && noWaitingTalkers
+                            && canSendPushNotifs
+                            && settings.getBoolean("notify", true)
+                            && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
+                        //Create notification manager
                         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O
-                                && noWaitingTalkers
-                                && canSendPushNotifs
-                                && settings.getBoolean("notify", true)) {
+                        //Create channel in which to send push notifications
+                        String CHANNEL_ID = "my_channel_01";
+                        CharSequence name = "my_channel";
+                        String Description = "This is my channel";
+                        int importance = NotificationManager.IMPORTANCE_HIGH;
+                        NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+                        mChannel.setDescription(Description);
+                        mChannel.enableLights(true);
+                        mChannel.setLightColor(Color.RED);
+                        mChannel.enableVibration(true);
+                        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                        mChannel.setShowBadge(false);
+                        notificationManager.createNotificationChannel(mChannel);
 
-                            String CHANNEL_ID = "my_channel_01";
-                            CharSequence name = "my_channel";
-                            String Description = "This is my channel";
-                            int importance = NotificationManager.IMPORTANCE_HIGH;
-                            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-                            mChannel.setDescription(Description);
-                            mChannel.enableLights(true);
-                            mChannel.setLightColor(Color.RED);
-                            mChannel.enableVibration(true);
-                            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                            mChannel.setShowBadge(false);
-                            notificationManager.createNotificationChannel(mChannel);
+                        //Send push notification
+                        Notification notify = new Notification.Builder(getApplicationContext())
+                                .setContentTitle("Listener available on pSquared!")
+                                .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
+                                .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
 
-                            //NotificationManager notif = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            Notification notify = new Notification.Builder(getApplicationContext())
-                                    .setContentTitle("Listener available on pSquared!")
-                                    .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
-                                    .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
-
-                            notify.flags |= Notification.FLAG_AUTO_CANCEL;
-                            notificationManager.notify(0, notify);
-                        }
+                        notify.flags |= Notification.FLAG_AUTO_CANCEL;
+                        notificationManager.notify(0, notify);
                         break;
                     }
                 }
