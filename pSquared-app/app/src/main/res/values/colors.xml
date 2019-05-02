@@ -5,4 +5,6 @@
     <color name="colorAccent">#4A44CC</color>
     <color name="textPrimaryColor">#FFFFFF</color>
     <color name="textSecondaryColor">#e7e6e6</color>
+    <color name="textSecondaryColorDark">#696b69</color>
+    <color name="activeColor">#2ce64e</color>
 </resources>

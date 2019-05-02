@@ -20,17 +20,17 @@
         app:srcCompat="@drawable/back_icon" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:ems="10"
-        android:textColorHint="@android:color/background_light"
         android:hint="enter username"
         android:inputType="textPersonName"
         android:textColor="@android:color/background_light"
+        android:textColorHint="@android:color/background_light"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -60,28 +60,77 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView3" />
 
-    <Button
-        android:id="@+id/button2"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/Users"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/applyButton"
+        tools:layout_editor_absoluteX="8dp" />
+
+    <ImageView
+        android:id="@+id/search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:onClick="removeListener"
-        android:text="Remove Listener"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        android:clickable="true"
+        android:onClick="applySearch"
+        app:layout_constraintBottom_toBottomOf="@+id/filter"
+        app:layout_constraintStart_toEndOf="@+id/filter"
+        app:layout_constraintTop_toTopOf="@+id/filter"
+        app:srcCompat="@android:drawable/ic_menu_search" />
 
-    <Button
-        android:id="@+id/button3"
+    <CheckBox
+        android:id="@+id/listenerBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="8dp"
-        android:onClick="addListener"
-        android:text="Make Listener"
+        android:text="Listeners"
+        android:textColor="@color/textPrimaryColor"
+        app:layout_constraintBottom_toBottomOf="@+id/talkerBox"
+        app:layout_constraintEnd_toStartOf="@+id/counselorBox"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/talkerBox"
+        app:layout_constraintTop_toTopOf="@+id/talkerBox"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <CheckBox
+        android:id="@+id/counselorBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Counselors"
+        android:textColor="@color/textPrimaryColor"
+        app:layout_constraintBottom_toBottomOf="@+id/talkerBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/button2"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/listenerBox"
+        app:layout_constraintTop_toTopOf="@+id/talkerBox"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <CheckBox
+        android:id="@+id/talkerBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Talkers"
+        android:textColor="@color/textPrimaryColor"
+        app:layout_constraintEnd_toStartOf="@+id/listenerBox"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/filter" />
+
+    <Button
+        android:id="@+id/applyButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:onClick="applyFilters"
+        android:text="apply filters"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listenerBox" />
 </android.support.constraint.ConstraintLayout>
