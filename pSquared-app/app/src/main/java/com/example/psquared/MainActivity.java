@@ -152,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         invalidmessage = (TextView)findViewById(R.id.invalid);
-
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             editor.commit();
@@ -160,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             invalidmessage.setText("incorrect email/password combination");
-
                         }
 
                         // ...
