@@ -48,6 +48,8 @@ public class Chat extends AppCompatActivity {
     long latestTime = -1;
 
     private boolean exitChat = false;
+
+    /* override back button */
     @Override
     public void onBackPressed() {
         if (exitChat) {
@@ -67,13 +69,8 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-    public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-        if (date1 == null) {
-            return 0;
-        }
-        long diffInMillies = date2.getTime() - date1.getTime();
-        return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
-    }
+    /* override home button */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +85,7 @@ public class Chat extends AppCompatActivity {
         send = findViewById(R.id.fabsend);
         exit = findViewById(R.id.fabexit);
 
+        /* exit chat if the other person leaves */
         chat = FirebaseDatabase.getInstance().getReference(id);
         chat.addChildEventListener(new ChildEventListener() {
             @Override
@@ -119,7 +117,7 @@ public class Chat extends AppCompatActivity {
 
         });
 
-
+        /* push message to firebase database */
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +128,7 @@ public class Chat extends AppCompatActivity {
             }
         });
 
+        /* press exit button to leave */
         exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,7 +149,6 @@ public class Chat extends AppCompatActivity {
             }
         });
         
-        Snackbar.make(activity_chat, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Snackbar.LENGTH_SHORT).show();
         //load content
         displayChatMessage();
 
@@ -188,8 +186,6 @@ public class Chat extends AppCompatActivity {
                     messageText = v.findViewById(R.id.yourmessage);
                     other = v.findViewById(R.id.mymessage);
                 }
-                //messageText.setVisibility(View.VISIBLE);
-                //other.setVisibility(View.GONE);
                 messageText.setText(model.getMessageText());
                 TextView mine = v.findViewById(R.id.mymessage);
                 if (mine.getText().toString().equals(model.getMessageText())) {
@@ -201,7 +197,6 @@ public class Chat extends AppCompatActivity {
                     TextView yours = v.findViewById(R.id.yourmessage);
                     yours.setVisibility(View.VISIBLE);
                 }
-
                 if (startTime == -1) {
                     startTime = model.getMessageTime();
                     latestTime = startTime;
