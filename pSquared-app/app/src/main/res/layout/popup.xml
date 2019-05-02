@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rl_custom_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="#333333"
     android:padding="20dp"
     >
@@ -66,27 +66,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/email_login" />
 
-    <Button
-        android:id="@+id/save"
-        android:layout_width="wrap_content"
-        android:layout_height="67dp"
-        android:layout_below="@+id/confirmPwd"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="15dp"
-        android:layout_toEndOf="@+id/cancel"
-        android:text="Save" />
+        <Button
+            android:id="@+id/save"
+            android:layout_width="100dp"
+            android:layout_height="67dp"
+            android:layout_below="@+id/confirmPwd"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="20dp"
+            android:text="Save" />
 
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="67dp"
-        android:layout_below="@+id/confirmPwd"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="20dp"
-        android:text="Cancel" />
-
+        <Button
+            android:id="@+id/cancel"
+            android:layout_width="100dp"
+            android:layout_height="67dp"
+            android:layout_below="@+id/confirmPwd"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="20dp"
+            android:text="Cancel" />
 
 </RelativeLayout>

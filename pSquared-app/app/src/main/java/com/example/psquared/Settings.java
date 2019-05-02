@@ -115,6 +115,10 @@ public class Settings extends AppCompatActivity {
                 cancelButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        //Alert user that changes were not saved
+                        Toast.makeText(getApplicationContext(), "Changes were not saved", Toast.LENGTH_SHORT).show();
+
                         // Dismiss the popup window
                         mPopupWindow.dismiss();
                     }
@@ -132,48 +136,41 @@ public class Settings extends AppCompatActivity {
                         EditText newPassword = customView.findViewById(R.id.newPwd);
                         EditText confirmPassword = customView.findViewById(R.id.confirmPwd);
                         String oldPwd = oldPassword.getText().toString();
-                        String newPwd = newPassword.getText().toString();
+                        final String newPwd = newPassword.getText().toString();
                         String confirmPwd = confirmPassword.getText().toString();
 
                         if (oldPwd.equals("") || newPwd.equals("") || confirmPwd.equals("")) {
                             Toast.makeText(getApplicationContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                        } else if (newPwd.length() < 6) {
+                            Toast.makeText(getApplicationContext(), "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
                         } else if (!oldPwd.equals(settings.getString("password", ""))) {
                             Toast.makeText(getApplicationContext(), "Incorrect current password", Toast.LENGTH_SHORT).show();
                         } else if (!newPwd.equals(confirmPwd)) {
                             Toast.makeText(getApplicationContext(), "New Password does not match the Confirm Password", Toast.LENGTH_SHORT).show();
                         } else { //everything is successful
 
-                            /*
-                            //Update in Shared Preferences
-                            editor.putString("password", newPwd);
-                            editor.commit();
-
                             //Re-authenticate user in Firebase
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                            //Get user information from Shared Preferences
                             String myEmail = settings.getString("email", "");
                             String myPwd = settings.getString("password", "");
-                            AuthCredential credential = EmailAuthProvider
-                                    .getCredential(myEmail, myPwd);
-                            user.reauthenticate(credential)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(getApplicationContext(), "yes", Toast.LENGTH_SHORT).show();
-                                            } else {
-                                                Toast.makeText(getApplicationContext(), "no", Toast.LENGTH_SHORT).show();
-                                            }
-                                        }
-                                    });
+
+                            //Re-authenticate user in Firebase
+                            AuthCredential credential = EmailAuthProvider.getCredential(myEmail, myPwd);
+                            user.reauthenticate(credential);
 
                             //Update in Firebase
-                            //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             user.updatePassword(newPwd)
                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
                                                 Toast.makeText(getApplicationContext(), "Password successfully updated!", Toast.LENGTH_SHORT).show();
+
+                                                //Update in Shared Preferences
+                                                editor.putString("password", newPwd);
+                                                editor.commit();
                                             } else {
                                                 Toast.makeText(getApplicationContext(), "Something went wrong.. password unchanged", Toast.LENGTH_SHORT).show();
                                             }
@@ -182,12 +179,12 @@ public class Settings extends AppCompatActivity {
 
                             // Dismiss the popup window
                             mPopupWindow.dismiss();
-                            */
+
                         }
                     }
                 });
 
-                mPopupWindow.showAtLocation(mLayout, Gravity.CENTER,0,0);
+                mPopupWindow.showAtLocation(mLayout, Gravity.TOP,0,500);
             }
 
         });
