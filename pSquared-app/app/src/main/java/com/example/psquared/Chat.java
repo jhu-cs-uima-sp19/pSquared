@@ -87,6 +87,7 @@ public class Chat extends AppCompatActivity {
 
         /* exit chat if the other person leaves */
         chat = FirebaseDatabase.getInstance().getReference(id);
+        //chat.push().setValue(new ChatMessage("meep", "merp@jhu.edu",true));
         chat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
