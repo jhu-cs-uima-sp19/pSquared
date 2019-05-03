@@ -48,6 +48,7 @@ public class HomeTalker extends AppCompatActivity {
     String email;
     int count = 0;
     final Timer T = new Timer();
+    int numAvailableListenersPrev = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +76,7 @@ public class HomeTalker extends AppCompatActivity {
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
         editor.putBoolean("canLook", true);
+        editor.putBoolean("isCounselor", false);
         editor.commit();
 
         email = settings.getString("email", "email");
@@ -294,44 +296,24 @@ public class HomeTalker extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                int numAvailableListenerNow = 0;
+
                 //loop through listeners
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy")
-                            && noWaitingTalkers
-                            && canSendPushNotifs
-                            && settings.getBoolean("notify", true)
-                            && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
-                        //Create notification manager
-                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                        //Create channel in which to send push notifications
-                        String CHANNEL_ID = "my_channel_01";
-                        CharSequence name = "my_channel";
-                        String Description = "This is my channel";
-                        int importance = NotificationManager.IMPORTANCE_HIGH;
-                        NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-                        mChannel.setDescription(Description);
-                        mChannel.enableLights(true);
-                        mChannel.setLightColor(Color.RED);
-                        mChannel.enableVibration(true);
-                        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                        mChannel.setShowBadge(false);
-                        notificationManager.createNotificationChannel(mChannel);
-
-                        //Send push notification
-                        Notification notify = new Notification.Builder(getApplicationContext())
-                                .setContentTitle("Listener available on pSquared!")
-                                .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
-                                .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
-
-                        notify.flags |= Notification.FLAG_AUTO_CANCEL;
-                        notificationManager.notify(0, notify);
-                        break;
+                    if (!snapshot.getKey().equals("dummy")) {
+                        //Should only increment for entries that are not dummy
+                        numAvailableListenerNow++;
                     }
                 }
+
+                if (noWaitingTalkers && canSendPushNotifs && settings.getBoolean("notify", true)
+                        && settings.getBoolean("isCounselor", true) && numAvailableListenerNow > numAvailableListenersPrev) {
+                    //send notifications if above conditions are met and there are now more listeners than there were before
+                    sendPushNotification();
+                }
+                numAvailableListenersPrev = numAvailableListenerNow;
             }
 
             @Override
@@ -339,9 +321,37 @@ public class HomeTalker extends AppCompatActivity {
 
             }
         };
-
         availableListeners.addValueEventListener(listenerAvailable);
+    }
 
+    public void sendPushNotification() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            //Create notification manager
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            //Create channel in which to send push notification
+            String CHANNEL_ID = "my_channel_01";
+            CharSequence name = "my_channel";
+            String Description = "This is my channel";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mChannel.setShowBadge(false);
+            notificationManager.createNotificationChannel(mChannel);
+
+            //Send push notification
+            Notification notify = new Notification.Builder(getApplicationContext())
+                    .setContentTitle("Listener available on pSquared!")
+                    .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
+                    .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
+
+            notify.flags |= Notification.FLAG_AUTO_CANCEL;
+            notificationManager.notify(0, notify);
+        }
     }
 
     /**
