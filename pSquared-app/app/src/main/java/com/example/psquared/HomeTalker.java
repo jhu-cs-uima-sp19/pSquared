@@ -309,7 +309,7 @@ public class HomeTalker extends AppCompatActivity {
                 }
 
                 if (noWaitingTalkers && canSendPushNotifs && settings.getBoolean("notify", true)
-                        && settings.getBoolean("isCounselor", true) && numAvailableListenerNow > numAvailableListenersPrev) {
+                        && !settings.getBoolean("isCounselor", true) && numAvailableListenerNow > numAvailableListenersPrev) {
                     //send notifications if above conditions are met and there are now more listeners than there were before
                     sendPushNotification();
                 }
