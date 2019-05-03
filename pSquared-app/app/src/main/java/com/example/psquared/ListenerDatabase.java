@@ -316,7 +316,7 @@ public class ListenerDatabase extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         if (snapshot.getValue().toString().equals(id)) {
                             v.setVisibility(View.VISIBLE);
-                            v.setText("active listener");
+                            v.setText("L");
                             v.setTextColor(getResources().getColor(R.color.activeColor));
                             return;
                         }
@@ -338,7 +338,7 @@ public class ListenerDatabase extends AppCompatActivity {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         if (snapshot.getValue().toString().equals(id + "@jhu.edu")) {
                             v.setVisibility(View.VISIBLE);
-                            v.setText("active talker");
+                            v.setText("T");
                             v.setTextColor(getResources().getColor(R.color.activeColor));
                             return;
                         }
