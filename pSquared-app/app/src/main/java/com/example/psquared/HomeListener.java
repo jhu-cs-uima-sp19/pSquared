@@ -51,6 +51,7 @@ public class HomeListener extends AppCompatActivity {
     String email;
     int count = 0;
     final Timer T = new Timer();
+    int numAvailableListenersPrev = 0;
 
 
     @Override
@@ -100,7 +101,7 @@ public class HomeListener extends AppCompatActivity {
 
         //set up push notifications
         canSendPushNotifs = true;
-        pushNotifications();
+        listenForPushNotifications();
     }
 
     public void time() {
@@ -401,7 +402,7 @@ public class HomeListener extends AppCompatActivity {
         listenTimer.setVisibility(View.INVISIBLE);
     }
 
-    public void pushNotifications() {
+    public void listenForPushNotifications() {
 
         final ValueEventListener talkerWaiting = new ValueEventListener() {
 
@@ -432,47 +433,26 @@ public class HomeListener extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                int numAvailableListenerNow = 0;
+
                 //loop through listeners
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     //Get my own email so I don't get a notification if I click Listener
                     String myEmail = settings.getString("email", "email").substring(0, email.indexOf("@"));
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy")
-                            && !snapshot.getValue().equals(myEmail)
-                            && noWaitingTalkers
-                            && canSendPushNotifs
-                            && settings.getBoolean("notify", true)
-                            && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-
-                        //Create notification manager
-                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                        //Create channel in which to send push notification
-                        String CHANNEL_ID = "my_channel_01";
-                        CharSequence name = "my_channel";
-                        String Description = "This is my channel";
-                        int importance = NotificationManager.IMPORTANCE_HIGH;
-                        NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
-                        mChannel.setDescription(Description);
-                        mChannel.enableLights(true);
-                        mChannel.setLightColor(Color.RED);
-                        mChannel.enableVibration(true);
-                        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-                        mChannel.setShowBadge(false);
-                        notificationManager.createNotificationChannel(mChannel);
-
-                        //Send push notification
-                        Notification notify = new Notification.Builder(getApplicationContext())
-                                .setContentTitle("Listener available on pSquared!")
-                                .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
-                                .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
-
-                        notify.flags |= Notification.FLAG_AUTO_CANCEL;
-                        notificationManager.notify(0, notify);
-                        break;
+                    if (!snapshot.getKey().equals("dummy") && !snapshot.getValue().equals(myEmail)) {
+                        //Should only increment for entries that are not dummy nor myself
+                        numAvailableListenerNow++;
                     }
                 }
+
+                if (noWaitingTalkers && canSendPushNotifs && settings.getBoolean("notify", true)
+                        && numAvailableListenerNow > numAvailableListenersPrev) {
+                    //send notifications if above conditions are met and there are now more listeners than there were before
+                    sendPushNotification();
+                }
+                numAvailableListenersPrev = numAvailableListenerNow;
             }
 
             @Override
@@ -483,6 +463,36 @@ public class HomeListener extends AppCompatActivity {
 
         availableListeners.addValueEventListener(listenerAvailable);
 
+    }
+
+    public void sendPushNotification() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            //Create notification manager
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            //Create channel in which to send push notification
+            String CHANNEL_ID = "my_channel_01";
+            CharSequence name = "my_channel";
+            String Description = "This is my channel";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            mChannel.setDescription(Description);
+            mChannel.enableLights(true);
+            mChannel.setLightColor(Color.RED);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mChannel.setShowBadge(false);
+            notificationManager.createNotificationChannel(mChannel);
+
+            //Send push notification
+            Notification notify = new Notification.Builder(getApplicationContext())
+                    .setContentTitle("Listener available on pSquared!")
+                    .setContentText("You can now talk about your day in a pSquared chatbox with a Listener")
+                    .setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
+
+            notify.flags |= Notification.FLAG_AUTO_CANCEL;
+            notificationManager.notify(0, notify);
+        }
     }
 
     public void onHoverButtons() {
