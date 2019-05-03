@@ -108,6 +108,9 @@ public class HomeListener extends AppCompatActivity {
         availableAsTalker = false;
         availableAsListener = false;
 
+        //set up push notifications
+        canSendPushNotifs = true;
+        listenForPushNotifications();
     }
 
     public void time() {
