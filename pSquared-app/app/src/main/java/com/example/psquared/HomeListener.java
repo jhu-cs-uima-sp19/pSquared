@@ -67,6 +67,7 @@ public class HomeListener extends AppCompatActivity {
         editor = settings.edit();
         email = settings.getString("email", "email");
         editor.putBoolean("canLook", true);
+        editor.putBoolean("isCounselor", false);
         editor.commit();
 
         availableAsTalker = false;
@@ -461,7 +462,7 @@ public class HomeListener extends AppCompatActivity {
                 }
 
                 if (noWaitingTalkers && canSendPushNotifs && settings.getBoolean("notify", true)
-                        && numAvailableListenerNow > numAvailableListenersPrev) {
+                        && settings.getBoolean("isCounselor", true) && numAvailableListenerNow > numAvailableListenersPrev) {
                     //send notifications if above conditions are met and there are now more listeners than there were before
                     sendPushNotification();
                 }
@@ -484,12 +485,13 @@ public class HomeListener extends AppCompatActivity {
             //Create notification manager
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+            /*
             //Create channel in which to send push notification
             String CHANNEL_ID = "my_channel_01";
             CharSequence name = "my_channel";
             String Description = "This is my channel";
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            /*NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
             mChannel.setDescription(Description);
             mChannel.enableLights(true);
             mChannel.setLightColor(Color.RED);
@@ -505,7 +507,7 @@ public class HomeListener extends AppCompatActivity {
                     //.setSmallIcon(R.drawable.psquared_logo).setChannelId(CHANNEL_ID).build();
                     .setSmallIcon(R.drawable.psquared_logo).build();
 
-            notify.flags |= Notification.FLAG_AUTO_CANCEL;
+            //notify.flags |= Notification.FLAG_AUTO_CANCEL;
             notificationManager.notify(0, notify);
         }
         /*

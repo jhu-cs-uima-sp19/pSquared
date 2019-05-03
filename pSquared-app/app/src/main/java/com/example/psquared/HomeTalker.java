@@ -74,6 +74,7 @@ public class HomeTalker extends AppCompatActivity {
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
         editor.putBoolean("canLook", true);
+        editor.putBoolean("isCounselor", false);
         editor.commit();
 
         email = settings.getString("email", "email");
@@ -299,7 +300,7 @@ public class HomeTalker extends AppCompatActivity {
                 }
 
                 if (noWaitingTalkers && canSendPushNotifs && settings.getBoolean("notify", true)
-                        && numAvailableListenerNow > numAvailableListenersPrev) {
+                        && settings.getBoolean("isCounselor", true) && numAvailableListenerNow > numAvailableListenersPrev) {
                     //send notifications if above conditions are met and there are now more listeners than there were before
                     sendPushNotification();
                 }
