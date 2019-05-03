@@ -11,16 +11,8 @@ public class ChatMessage {
         this.messageText = messageText;
         this.messageUser = messageUser;
         messageTime = new Date().getTime();
-        //dummy = false;
     }
-/*
-    public ChatMessage(String messageText, String messageUser, Boolean dum) {
-        this.messageText = messageText;
-        this.messageUser = messageUser;
-        messageTime = new Date().getTime();
-        dummy = true;
-    }
-*/
+
     public ChatMessage() {
 
     }

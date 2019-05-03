@@ -46,7 +46,6 @@ public class Chat extends AppCompatActivity {
     private String id;
     long startTime = -1;
     long latestTime = -1;
-
     private boolean exitChat = false;
 
     /* override back button */
@@ -69,9 +68,6 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-    /* override home button */
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +83,7 @@ public class Chat extends AppCompatActivity {
 
         /* exit chat if the other person leaves */
         chat = FirebaseDatabase.getInstance().getReference(id);
-        //chat.push().setValue(new ChatMessage("meep", "merp@jhu.edu",true));
+        chat.push().setValue(new ChatMessage("", ""));
         chat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -179,38 +175,42 @@ public class Chat extends AppCompatActivity {
             protected void populateView(View v, ChatMessage model, int position) {
                 TextView messageText, other;
                 String me = settings.getString("name", "unknown");
-
-                if (model.getMessageUser().equals(me)) {
-                    messageText = v.findViewById(R.id.mymessage);
-                    other = v.findViewById(R.id.yourmessage);
-                } else {
-                    messageText = v.findViewById(R.id.yourmessage);
-                    other = v.findViewById(R.id.mymessage);
-                }
-                messageText.setText(model.getMessageText());
-                TextView mine = v.findViewById(R.id.mymessage);
-                if (mine.getText().toString().equals(model.getMessageText())) {
-                    mine.setVisibility(View.VISIBLE);
-                    TextView yours = v.findViewById(R.id.yourmessage);
-                    yours.setVisibility(View.GONE);
-                } else {
-                    mine.setVisibility(View.GONE);
-                    TextView yours = v.findViewById(R.id.yourmessage);
-                    yours.setVisibility(View.VISIBLE);
-                }
-                if (startTime == -1) {
-                    startTime = model.getMessageTime();
-                    latestTime = startTime;
-                } else {
-                    latestTime = model.getMessageTime();
-                    long mil = latestTime - startTime;
-                    long min = (mil/1000)/60;
-                    int dif = (int)min;
-                    if ((dif % 30 == 0) && (dif !=0)) {
-                        Snackbar.make(activity_chat, "You have been chatting for " + dif + " minutes!", Snackbar.LENGTH_SHORT).show();
+                    if (model.getMessageUser().equals(me)) {
+                        messageText = v.findViewById(R.id.mymessage);
+                    } else {
+                        messageText = v.findViewById(R.id.yourmessage);
+                    }
+                    messageText.setText(model.getMessageText());
+                    TextView mine = v.findViewById(R.id.mymessage);
+                    if (mine.getText().toString().equals(model.getMessageText())) {
+                        mine.setVisibility(View.VISIBLE);
+                        other = v.findViewById(R.id.yourmessage);
+                        other.setVisibility(View.GONE);
+                    } else {
+                        mine.setVisibility(View.GONE);
+                        other = v.findViewById(R.id.yourmessage);
+                        other.setVisibility(View.VISIBLE);
+                    }
+                    if (model.getMessageUser().equals("") && model.getMessageText().equals("")) {
+                        messageText = v.findViewById(R.id.mymessage);
+                        other = v.findViewById(R.id.yourmessage);
+                        messageText.setVisibility(View.GONE);
+                        other.setVisibility(View.GONE);
+                    }
+                    if (startTime == -1) {
+                        startTime = model.getMessageTime();
+                        latestTime = startTime;
+                    } else {
+                        latestTime = model.getMessageTime();
+                        long mil = latestTime - startTime;
+                        long min = (mil / 1000) / 60;
+                        int dif = (int) min;
+                        if ((dif % 30 == 0) && (dif != 0)) {
+                            Snackbar.make(activity_chat, "You have been chatting for " + dif + " minutes!", Snackbar.LENGTH_SHORT).show();
+                        }
                     }
                 }
-            }
+
         };
         listofMessage.setAdapter(adapter);
     }
