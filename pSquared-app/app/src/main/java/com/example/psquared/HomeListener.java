@@ -276,8 +276,8 @@ public class HomeListener extends AppCompatActivity {
                 } else {
                     if (!availableAsTalker) {
                         talkBtn.setAlpha(.5f);
-                        talkBtn.setText("Connecting to a Listener...");
-                        talkBtn.setTextSize(30);
+                        talkBtn.setText("Connecting...");
+                        talkBtn.setTextSize(20);
                         tv.setVisibility(View.VISIBLE);
                         count = 0;
                         timerText.setVisibility(View.VISIBLE);
@@ -326,7 +326,7 @@ public class HomeListener extends AppCompatActivity {
 
         talkBtn.setAlpha(1f);
         talkBtn.setText("Talk");
-        talkBtn.setTextSize(55);
+        talkBtn.setTextSize(50);
         tv.setVisibility(View.INVISIBLE);
         timerText.setVisibility(View.INVISIBLE);
     }
@@ -348,8 +348,8 @@ public class HomeListener extends AppCompatActivity {
                 } else {
                     if (!availableAsListener) {
                         listenBtn.setAlpha(.5f);
-                        listenBtn.setText("Connecting to a Talker...");
-                        listenBtn.setTextSize(30);
+                        listenBtn.setText("Connecting...");
+                        listenBtn.setTextSize(20);
                         tv.setVisibility(View.VISIBLE);//changing firebase database values
                         count = 0;
                         listenTimer.setVisibility(View.VISIBLE);
@@ -419,7 +419,7 @@ public class HomeListener extends AppCompatActivity {
         //T.cancel(); //stop timer
         listenBtn.setAlpha(1f);
         listenBtn.setText("Listen");
-        listenBtn.setTextSize(55);
+        listenBtn.setTextSize(40);
         tv.setVisibility(View.INVISIBLE);
         listenTimer.setVisibility(View.INVISIBLE);
     }
