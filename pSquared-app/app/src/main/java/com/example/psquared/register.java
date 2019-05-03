@@ -77,7 +77,9 @@ public class register extends AppCompatActivity {
                 String temp2 = confirmPassword.getText().toString();
 
                 // put in requirements for password? length, special char
-                if (temp1.equals(temp2)) {
+                if(temp1.length()<6) {
+                    errorMessage.setText("password has to be at least 6 characters");
+                } else if (temp1.equals(temp2)) {
                     password = temp1;
                     pass2 = true;
                 } else {
