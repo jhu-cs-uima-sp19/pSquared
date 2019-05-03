@@ -82,12 +82,16 @@ public class HomeTalker extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         availableTalkers = database.getReference("availableTalkers");
         availableListeners = database.getReference("availableListeners");
-
-        availableAsTalker = false;
-
         //set up push notifications
         canSendPushNotifs = true;
         pushNotifications();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        makeUnavailable();
+        availableAsTalker = false;
     }
 
     public void time() {
@@ -173,8 +177,9 @@ public class HomeTalker extends AppCompatActivity {
                         listener.removeValue();
 
                         // remove yourself from available listeners
-                        // availableListeners.child(snapshot.getKey()).removeValue();
-                        // curUser.removeValue();
+                        // I don't know why this is needed but the app crashes when I remove it
+                        availableListeners.child(snapshot.getKey()).removeValue();
+                        curUser.removeValue();
 
                         // remember chat ID for chatroom
                         editor.putString("curChat", snapshot.getValue().toString());
@@ -377,4 +382,52 @@ public class HomeTalker extends AppCompatActivity {
         talkTimer.setVisibility(View.INVISIBLE);
     }
 
+
+    // if the user is listed as available in Firebase, make them unavailable
+    private void makeUnavailable() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        // Toast.makeText(getApplicationContext(), email, Toast.LENGTH_SHORT).show();
+
+        //removing from availableTalker list if on list.
+        final DatabaseReference curTalker = database.getReference("availableTalkers");
+        curTalker.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                curTalker.removeEventListener(this);
+                DatabaseReference curUser;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.getValue().toString().equals(email)) {
+                        curUser = curTalker.child(snapshot.getKey());
+                        curUser.removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        //removing from availableListener list if on list
+        final DatabaseReference curListener = database.getReference("availableListeners");
+        curListener.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                curListener.removeEventListener(this);
+                DatabaseReference curUser;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.getValue().toString().equals(email.substring(0, email.indexOf("@")))) {
+                        curUser = curListener.child(snapshot.getKey());
+                        curUser.removeValue();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
 }
