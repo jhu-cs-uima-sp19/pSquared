@@ -56,6 +56,8 @@ public class HomeTalker extends AppCompatActivity {
         availableAsTalker = false;
         settings = getDefaultSharedPreferences(this);
         editor = settings.edit();
+        editor.putBoolean("talking", false);
+
         editor.commit();
         //Wait for talker button to be clicked
         onTalk();
@@ -82,6 +84,8 @@ public class HomeTalker extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         availableTalkers = database.getReference("availableTalkers");
         availableListeners = database.getReference("availableListeners");
+
+        availableAsTalker = settings.getBoolean("talking", false);
         //set up push notifications
         canSendPushNotifs = true;
         pushNotifications();
@@ -185,6 +189,8 @@ public class HomeTalker extends AppCompatActivity {
                         editor.putString("curChat", snapshot.getValue().toString());
                         editor.putString("name", email);
 
+                        editor.putBoolean("talking", false);
+
                         // not available to look anymore
                         editor.putBoolean("canLook", false);
                         editor.commit();
@@ -236,6 +242,7 @@ public class HomeTalker extends AppCompatActivity {
                     // add listener to database reference
                     availableListeners.addValueEventListener(listen);
                     availableTalkers.addValueEventListener(queuePosChecker);
+                    editor.putBoolean("talking", true);
 
                 } else {
                     curUser.removeValue();
@@ -249,7 +256,9 @@ public class HomeTalker extends AppCompatActivity {
                     count = 0;
                     //Can send push notifications again
                     canSendPushNotifs = true;
+                    editor.putBoolean("talking", false);
                 }
+                editor.commit();
             }
         });
     }

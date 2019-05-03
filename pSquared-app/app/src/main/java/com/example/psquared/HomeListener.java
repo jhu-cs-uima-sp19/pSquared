@@ -67,7 +67,9 @@ public class HomeListener extends AppCompatActivity {
 
         availableAsTalker = false;
         availableAsListener = false;
-
+        editor.putBoolean("listening", false);
+        editor.putBoolean("talking", false);
+        editor.commit();
         //Wait for talker or listen buttons to be clicked
         onTalk();
         onListen();
@@ -95,6 +97,8 @@ public class HomeListener extends AppCompatActivity {
         availableTalkers = database.getReference("availableTalkers");
         availableListeners = database.getReference("availableListeners");
 
+        availableAsTalker = settings.getBoolean("talking", false);
+        availableAsListener = settings.getBoolean("listening", false);
         //set up push notifications
         canSendPushNotifs = true;
         pushNotifications();
@@ -238,6 +242,8 @@ public class HomeListener extends AppCompatActivity {
                         editor.putString("curChat", snapshot.getValue().toString());
                         editor.putString("name", email);
 
+                        editor.putBoolean("talking", false);
+
                         // not available to look anymore
                         editor.putBoolean("canLook", false);
                         editor.commit();
@@ -286,6 +292,8 @@ public class HomeListener extends AppCompatActivity {
 
                         //changing boolean value to tell program button is selected
                         availableAsTalker = true;
+                        editor.putBoolean("talking", true);
+                        editor.commit();
 
                     } else {
 
@@ -296,6 +304,8 @@ public class HomeListener extends AppCompatActivity {
                         availableListeners.removeEventListener(listen);
                         availableTalkers.removeEventListener(queuePosChecker);
                         availableAsTalker = false;
+                        editor.putBoolean("talking", false);
+                        editor.commit();
                         resetTalk();
                     }
                 }
@@ -349,6 +359,9 @@ public class HomeListener extends AppCompatActivity {
 
                         //changing boolean value to tell program button is selected
                         availableAsListener = true;
+                        editor.putBoolean("listening", true);
+                        editor.commit();
+
 
                         final DatabaseReference chats = database.getReference("chats");
 
@@ -363,6 +376,7 @@ public class HomeListener extends AppCompatActivity {
 
                                         editor.putString("curChat", snapshot.getKey());
                                         editor.putString("name", email);
+                                        editor.putBoolean("listening", false);
                                         editor.commit();
 
                                         chats.removeEventListener(this);
@@ -385,6 +399,8 @@ public class HomeListener extends AppCompatActivity {
                         curUserListener.removeValue();
                         resetListen();
                         availableAsListener = false;
+                        editor.putBoolean("listening", false);
+                        editor.commit();
                     }
                 }
             }
