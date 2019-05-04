@@ -24,7 +24,7 @@ The list of available talkers and listeners are updated in real-time depending o
 
 By using this database, we can authenticate availability of Talkers and Listeners and connect them into an anonymous chatbox. After exiting the chat, all messages are deleted from the database.
 
-We have also implemented push notifications that alert talkers and listeners when a listener is currently available.
+We have also implemented push notifications that alert talkers and listeners when a listener is currently available. Unfortunately, our notifications only work with APIs greater than or equal to 26.
 
 Stand-Up Meetings
 
