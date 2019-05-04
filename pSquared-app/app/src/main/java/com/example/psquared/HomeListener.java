@@ -233,7 +233,8 @@ public class HomeListener extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
                     // ignore dummy entry of database
-                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false) == true) {
+                    if (!snapshot.getKey().equals("dummy") && settings.getBoolean("canLook", false)
+                            && !snapshot.getValue().toString().equals(email.substring(0,email.indexOf("@")))) {
 
                         //post chat to to database for listener to find
                         DatabaseReference chatdb = database.getReference("chats").child(snapshot.getValue().toString());
