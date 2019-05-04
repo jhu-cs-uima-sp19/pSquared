@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 public class CounselorMain extends AppCompatActivity {
 
     private SharedPreferences settings;
@@ -16,7 +18,8 @@ public class CounselorMain extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_counselor_main);
-
+        settings = getDefaultSharedPreferences(this);
+        editor = settings.edit();
         editor.putBoolean("isCounselor", false);
     }
 
